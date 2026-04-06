@@ -1,27 +1,40 @@
 import { NextResponse } from 'next/server';
+import { requireEventPermission } from '@/features/auth/utils/rbac';
+import { getRsvpSummary } from '@/features/rsvp/queries/rsvp.queries';
+import { getGuestCount } from '@/features/guests/queries/guest.queries';
+import { successResponse, errorResponse } from '@/shared/schemas/common';
+import { DomainError } from '@/shared/lib/errors';
 
 // GET /api/app/events/:eventId/reports — Get event reports summary
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ eventId: string }> }
 ) {
   const { eventId } = await params;
 
-  // TODO: Auth + permission check (report.read)
-  // TODO: Aggregate from event_metrics_daily
-  // TODO: Return EventAnalyticsDto
+  try {
+    await requireEventPermission(eventId, 'report.read');
 
-  return NextResponse.json({
-    success: true,
-    data: {
+    const [rsvpSummary, totalGuests] = await Promise.all([
+      getRsvpSummary(eventId),
+      getGuestCount(eventId),
+    ]);
+
+    return NextResponse.json(successResponse({
       eventId,
-      totalPageViews: 0,
-      uniqueVisitors: 0,
-      rsvpStarted: 0,
-      rsvpCompleted: 0,
-      attendingCount: 0,
-      declinedCount: 0,
-      checkins: 0,
-    },
-  });
+      totalGuests,
+      rsvp: rsvpSummary,
+    }));
+  } catch (error) {
+    if (error instanceof DomainError) {
+      return NextResponse.json(
+        errorResponse(error.code, error.message),
+        { status: error.statusCode }
+      );
+    }
+    return NextResponse.json(
+      errorResponse('INTERNAL_ERROR', '서버 오류가 발생했습니다.'),
+      { status: 500 }
+    );
+  }
 }
