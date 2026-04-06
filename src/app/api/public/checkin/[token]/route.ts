@@ -1,20 +1,26 @@
 import { NextResponse } from 'next/server';
+import { performQrCheckin } from '@/features/checkin/queries/checkin.queries';
+import { successResponse, errorResponse } from '@/shared/schemas/common';
+import { DomainError } from '@/shared/lib/errors';
 
-// POST /api/public/checkin/:token — QR check-in
 export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ token: string }> }
+  _request: Request,
+  { params }: { params: Promise<{ token: string }> },
 ) {
   const { token } = await params;
-
-  // TODO: Validate QR token
-  // TODO: Check expiry/revocation
-  // TODO: Check for duplicate check-in
-  // TODO: Create checkin_log record
-  // TODO: Update guest status
-
-  return NextResponse.json({
-    success: true,
-    data: { message: 'TODO: implement QR check-in' },
-  });
+  try {
+    const log = await performQrCheckin(token);
+    return NextResponse.json(successResponse(log));
+  } catch (error) {
+    if (error instanceof DomainError) {
+      return NextResponse.json(
+        errorResponse(error.code, error.message),
+        { status: error.statusCode },
+      );
+    }
+    return NextResponse.json(
+      errorResponse('INTERNAL_ERROR', '서버 오류가 발생했습니다.'),
+      { status: 500 },
+    );
+  }
 }
