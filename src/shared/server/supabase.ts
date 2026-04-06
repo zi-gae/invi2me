@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { UnauthenticatedError } from '@/shared/lib/errors';
 
 export async function createSupabaseServerClient() {
   const cookieStore = await cookies();
@@ -46,7 +47,7 @@ export async function getUser() {
 export async function requireUser() {
   const user = await getUser();
   if (!user) {
-    throw new Error('Unauthenticated');
+    throw new UnauthenticatedError();
   }
   return user;
 }

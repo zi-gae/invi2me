@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local TLS certs (corporate network)
+.certs/
+
+# Claude Code / MCP
+.claude/
+.mcp.json
+.playwright-mcp/
+
+# Supabase temp files
+supabase/.temp/
