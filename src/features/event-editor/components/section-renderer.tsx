@@ -149,11 +149,33 @@ function RsvpFormSection({ props: _props }: { props: Record<string, unknown> }) 
   );
 }
 
-function FaqSection({ props: _props }: { props: Record<string, unknown> }) {
+interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+function FaqSection({ props }: { props: Record<string, unknown> }) {
+  const title = (props.title as string) ?? '자주 묻는 질문';
+  const items = (props.items as FaqItem[]) ?? [];
+
   return (
-    <section className="py-16 text-center">
-      <h2 className="text-2xl font-semibold">자주 묻는 질문</h2>
-      {/* TODO: FAQ accordion */}
+    <section className="mx-auto max-w-2xl px-4 py-16">
+      <h2 className="mb-8 text-center text-2xl font-semibold">{title}</h2>
+      {items.length === 0 ? null : (
+        <div className="divide-y divide-gray-200">
+          {items.map((item, i) => (
+            <details key={i} className="group py-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-medium text-gray-900">
+                {item.question}
+                <span className="shrink-0 text-gray-400 transition-transform group-open:rotate-45">
+                  +
+                </span>
+              </summary>
+              <p className="mt-3 text-sm leading-relaxed text-gray-600">{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      )}
     </section>
   );
 }
