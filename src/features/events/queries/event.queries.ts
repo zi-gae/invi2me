@@ -114,18 +114,25 @@ export async function createEvent(data: {
 /** Update event */
 export async function updateEvent(eventId: string, data: Partial<{
   title: string;
-  subtitle: string;
+  subtitle: string | null;
+  slug: string;
   status: string;
   visibility: string;
+  primaryLocale: string;
+  defaultTimezone: string;
   coverImageUrl: string;
-  startsAt: string;
-  endsAt: string;
-  rsvpOpensAt: string;
-  rsvpClosesAt: string;
-  seoTitle: string;
-  seoDescription: string;
-  ogImageUrl: string;
+  startsAt: string | null;
+  endsAt: string | null;
+  rsvpOpensAt: string | null;
+  rsvpClosesAt: string | null;
+  checkinEnabled: boolean;
+  messagingEnabled: boolean;
+  analyticsEnabled: boolean;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  ogImageUrl: string | null;
   publishedAt: string;
+  deletedAt: string | null;
 }>) {
   const [event] = await db
     .update(events)

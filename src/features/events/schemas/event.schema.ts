@@ -21,3 +21,41 @@ export const updateEventStatusSchema = z.object({
   status: z.enum(['draft', 'scheduled', 'published', 'archived']),
 });
 export type UpdateEventStatusInput = z.infer<typeof updateEventStatusSchema>;
+
+// Settings page section schemas
+export const updateEventBasicSchema = z.object({
+  title: z.string().min(1, '제목을 입력해주세요').max(200),
+  subtitle: z.string().max(500).optional(),
+  slug: z.string().min(2).max(100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, '영문 소문자, 숫자, 하이픈만 사용 가능합니다'),
+  primaryLocale: z.enum(['ko', 'en']),
+  defaultTimezone: z.string(),
+});
+export type UpdateEventBasicInput = z.infer<typeof updateEventBasicSchema>;
+
+export const updateEventScheduleSchema = z.object({
+  startsAt: z.string().optional(),
+  endsAt: z.string().optional(),
+  rsvpOpensAt: z.string().optional(),
+  rsvpClosesAt: z.string().optional(),
+});
+export type UpdateEventScheduleInput = z.infer<typeof updateEventScheduleSchema>;
+
+export const updateEventVisibilitySchema = z.object({
+  visibility: z.enum(['public', 'private', 'invite_only', 'password_protected']),
+  accessPassword: z.string().min(4).max(100).optional(),
+});
+export type UpdateEventVisibilityInput = z.infer<typeof updateEventVisibilitySchema>;
+
+export const updateEventSeoSchema = z.object({
+  seoTitle: z.string().max(100).optional(),
+  seoDescription: z.string().max(300).optional(),
+  ogImageUrl: z.string().url().optional().or(z.literal('')),
+});
+export type UpdateEventSeoInput = z.infer<typeof updateEventSeoSchema>;
+
+export const updateEventFeaturesSchema = z.object({
+  checkinEnabled: z.boolean(),
+  messagingEnabled: z.boolean(),
+  analyticsEnabled: z.boolean(),
+});
+export type UpdateEventFeaturesInput = z.infer<typeof updateEventFeaturesSchema>;
