@@ -605,8 +605,8 @@ function DangerZoneTab({ event }: { event: AdminEventDto }) {
         </CardHeader>
         <CardContent>
           <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-            <DialogTrigger asChild>
-              <Button variant="destructive">이벤트 삭제</Button>
+            <DialogTrigger render={<Button variant="destructive" />}>
+              이벤트 삭제
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
