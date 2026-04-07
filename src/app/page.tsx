@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SiteFooter } from "@/components/site-footer";
 import {
   Mail,
   CheckSquare,
@@ -101,12 +102,7 @@ export default function HomePage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t py-6">
-        <p className="text-center text-xs text-muted-foreground">
-          © 2025 invi2me. All rights reserved.
-        </p>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
