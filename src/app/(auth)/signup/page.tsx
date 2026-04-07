@@ -19,7 +19,6 @@ export default function SignupPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const {
     register,
@@ -49,7 +48,7 @@ export default function SignupPage() {
       password: result.data.password,
       options: {
         data: { name: result.data.name },
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/email-verified`,
       },
     });
 
@@ -77,10 +76,11 @@ export default function SignupPage() {
       return;
     }
 
-    // If email confirmation is required, show success message
+    const encodedEmail = encodeURIComponent(result.data.email);
+
+    // If email confirmation is required, redirect to verify-email page
     if (authData.user.identities?.length === 0) {
-      setSuccess(true);
-      setLoading(false);
+      router.push(`/verify-email?email=${encodedEmail}`);
       return;
     }
 
@@ -89,33 +89,9 @@ export default function SignupPage() {
       router.push('/app/events');
       router.refresh();
     } else {
-      setSuccess(true);
-      setLoading(false);
+      router.push(`/verify-email?email=${encodedEmail}`);
     }
   };
-
-  if (success) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-sm space-y-6 text-center">
-          <div className="rounded-md bg-green-50 p-6">
-            <h2 className="text-lg font-semibold text-green-800">
-              회원가입 완료!
-            </h2>
-            <p className="mt-2 text-sm text-green-700">
-              이메일로 전송된 인증 링크를 확인해주세요.
-            </p>
-          </div>
-          <Link
-            href="/login"
-            className="inline-block text-sm text-blue-600 hover:underline"
-          >
-            로그인 페이지로 이동
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
