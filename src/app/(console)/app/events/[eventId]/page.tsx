@@ -13,6 +13,7 @@ import { getAdminEventById } from '@/features/events/queries/event.queries';
 import { getGuestCount } from '@/features/guests/queries/guest.queries';
 import { getRsvpSummary } from '@/features/rsvp/queries/rsvp.queries';
 import { EventNotFoundError } from '@/shared/lib/errors';
+import { EventPublicUrlBar } from '@/features/events/components/event-public-url-bar';
 
 interface EventDetailPageProps {
   params: Promise<{ eventId: string }>;
@@ -125,11 +126,14 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold">{event.title}</h1>
-        <Badge variant={STATUS_VARIANT[event.status] ?? 'secondary'}>
-          {STATUS_LABEL[event.status] ?? event.status}
-        </Badge>
+      <div className="space-y-2">
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold">{event.title}</h1>
+          <Badge variant={STATUS_VARIANT[event.status] ?? 'secondary'}>
+            {STATUS_LABEL[event.status] ?? event.status}
+          </Badge>
+        </div>
+        <EventPublicUrlBar slug={event.slug} />
       </div>
 
       {/* Stats Cards */}

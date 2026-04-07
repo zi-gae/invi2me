@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card';
 import { getCurrentWorkspace } from '@/features/auth/utils/get-current-workspace';
 import { listEventsByWorkspace } from '@/features/events/queries/event.queries';
+import { EventPublicUrlBar } from '@/features/events/components/event-public-url-bar';
 
 const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'outline'> = {
   published: 'default',
@@ -72,8 +73,8 @@ export default async function EventsListPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => (
-            <Link key={event.id} href={`/app/events/${event.id}`}>
-              <Card className="transition-shadow hover:shadow-md">
+            <Card key={event.id} className="transition-shadow hover:shadow-md">
+              <Link href={`/app/events/${event.id}`} className="block">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="line-clamp-1">
@@ -98,8 +99,11 @@ export default async function EventsListPage() {
                     )}
                   </div>
                 </CardContent>
-              </Card>
-            </Link>
+              </Link>
+              <div className="px-6 pb-4">
+                <EventPublicUrlBar slug={event.slug} />
+              </div>
+            </Card>
           ))}
         </div>
       )}
