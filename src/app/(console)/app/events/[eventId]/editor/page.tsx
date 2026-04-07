@@ -1,10 +1,13 @@
-import { Layout, Plus, Eye, Send } from 'lucide-react';
+import { Layout } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { db } from '@/db';
 import { eventPages, eventSections } from '@/db/schema/content';
 import { eq } from 'drizzle-orm';
+import { CreatePageButton } from '@/features/event-editor/components/create-page-button';
+import { PublishButton } from '@/features/event-editor/components/publish-button';
+import { AddSectionDialog } from '@/features/event-editor/components/add-section-dialog';
+import { SectionActions } from '@/features/event-editor/components/section-actions';
 
 interface EditorPageProps {
   params: Promise<{ eventId: string }>;
@@ -51,12 +54,11 @@ export default async function EditorPage({ params }: EditorPageProps) {
             아직 생성된 페이지가 없습니다
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            페이지를 생성하여 이벤트를 꾸며보세요.
+            페이지를 생성하면 기본 섹션이 자동으로 추가됩니다.
           </p>
-          <Button className="mt-4" disabled>
-            <Plus className="size-4" />
-            페이지 생성
-          </Button>
+          <div className="mt-4">
+            <CreatePageButton eventId={eventId} />
+          </div>
         </div>
       </div>
     );
@@ -69,6 +71,10 @@ export default async function EditorPage({ params }: EditorPageProps) {
     .where(eq(eventSections.eventPageId, firstPage.id))
     .orderBy(eventSections.sortOrder);
 
+  const nextSortOrder = sections.length > 0
+    ? Math.max(...sections.map((s) => s.sortOrder)) + 1
+    : 0;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -76,20 +82,17 @@ export default async function EditorPage({ params }: EditorPageProps) {
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold">페이지 편집기</h1>
           <Badge variant="secondary">{firstPage.title ?? firstPage.slug}</Badge>
+          {firstPage.publishedVersionId && (
+            <Badge variant="default">퍼블리시됨</Badge>
+          )}
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" disabled>
-            <Plus className="size-4" />
-            섹션 추가
-          </Button>
-          <Button variant="outline" disabled>
-            <Eye className="size-4" />
-            미리보기
-          </Button>
-          <Button disabled>
-            <Send className="size-4" />
-            퍼블리시
-          </Button>
+          <AddSectionDialog
+            eventId={eventId}
+            pageId={firstPage.id}
+            nextSortOrder={nextSortOrder}
+          />
+          <PublishButton eventId={eventId} pageId={firstPage.id} />
         </div>
       </div>
 
@@ -118,9 +121,16 @@ export default async function EditorPage({ params }: EditorPageProps) {
                     {SECTION_TYPE_LABEL[section.sectionType] ?? section.sectionType}
                   </Badge>
                 </div>
-                <Badge variant={section.isEnabled ? 'default' : 'secondary'}>
-                  {section.isEnabled ? '활성' : '비활성'}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant={section.isEnabled ? 'default' : 'secondary'}>
+                    {section.isEnabled ? '활성' : '비활성'}
+                  </Badge>
+                  <SectionActions
+                    eventId={eventId}
+                    sectionId={section.id}
+                    isEnabled={section.isEnabled}
+                  />
+                </div>
               </CardHeader>
               <CardContent className="pb-3">
                 <p className="text-sm text-muted-foreground">

@@ -44,6 +44,12 @@ export async function POST(
 
     // Get guest by token from header or body
     const guestToken = request.headers.get('x-guest-token') ?? body.guestToken;
+    if (!guestToken) {
+      return NextResponse.json(
+        errorResponse('GUEST_TOKEN_REQUIRED', '게스트 초대 토큰이 필요합니다.'),
+        { status: 400 }
+      );
+    }
     const guest = await getGuestByToken(guestToken);
 
     // Get default RSVP form

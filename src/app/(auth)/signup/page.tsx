@@ -49,6 +49,7 @@ export default function SignupPage() {
       password: result.data.password,
       options: {
         data: { name: result.data.name },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback`,
       },
     });
 

@@ -18,8 +18,8 @@ export async function GET(
 
     const url = new URL(request.url);
     const pagination = paginationSchema.parse({
-      page: url.searchParams.get('page'),
-      limit: url.searchParams.get('limit'),
+      page: url.searchParams.get('page') ?? undefined,
+      limit: url.searchParams.get('limit') ?? undefined,
     });
     const status = url.searchParams.get('status') ?? undefined;
     const groupId = url.searchParams.get('groupId') ?? undefined;

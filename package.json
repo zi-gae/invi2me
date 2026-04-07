@@ -10,7 +10,11 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:migrate:prod": "dotenv -e .env.production.local -- drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:studio:prod": "dotenv -e .env.production.local -- drizzle-kit studio",
+    "supabase:link:dev": "npx supabase link --project-ref fhmsewkjjonzzzitgasv",
+    "supabase:link:prod": "npx supabase link --project-ref onuhbshpjqmkkphoegsx"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
@@ -44,6 +48,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "dotenv": "^17.4.1",
+    "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
