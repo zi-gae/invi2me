@@ -212,6 +212,7 @@ function ScheduleTab({ event }: { event: AdminEventDto }) {
   const [isPending, startTransition] = useTransition();
   const [startsAt, setStartsAt] = useState(toDatetimeLocal(event.startsAt));
   const [endsAt, setEndsAt] = useState(toDatetimeLocal(event.endsAt));
+  const [rsvpEnabled, setRsvpEnabled] = useState(!!(event.rsvpOpensAt || event.rsvpClosesAt));
   const [rsvpOpensAt, setRsvpOpensAt] = useState(toDatetimeLocal(event.rsvpOpensAt));
   const [rsvpClosesAt, setRsvpClosesAt] = useState(toDatetimeLocal(event.rsvpClosesAt));
 
@@ -220,8 +221,8 @@ function ScheduleTab({ event }: { event: AdminEventDto }) {
       const result = await updateEventScheduleAction(event.id, {
         startsAt: toIso(startsAt),
         endsAt: toIso(endsAt),
-        rsvpOpensAt: toIso(rsvpOpensAt),
-        rsvpClosesAt: toIso(rsvpClosesAt),
+        rsvpOpensAt: rsvpEnabled ? toIso(rsvpOpensAt) : undefined,
+        rsvpClosesAt: rsvpEnabled ? toIso(rsvpClosesAt) : undefined,
       });
       if (result.success) {
         toast.success('일정이 저장되었습니다');
@@ -264,31 +265,53 @@ function ScheduleTab({ event }: { event: AdminEventDto }) {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">RSVP 기간</CardTitle>
-          <CardDescription>게스트가 RSVP를 제출할 수 있는 기간을 설정합니다</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="rsvpOpensAt">오픈 일시</Label>
-              <Input
-                id="rsvpOpensAt"
-                type="datetime-local"
-                value={rsvpOpensAt}
-                onChange={(e) => setRsvpOpensAt(e.target.value)}
-              />
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base">RSVP 기간</CardTitle>
+              <CardDescription>게스트가 RSVP를 제출할 수 있는 기간을 설정합니다</CardDescription>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="rsvpClosesAt">마감 일시</Label>
-              <Input
-                id="rsvpClosesAt"
-                type="datetime-local"
-                value={rsvpClosesAt}
-                onChange={(e) => setRsvpClosesAt(e.target.value)}
+            <button
+              type="button"
+              role="switch"
+              aria-checked={rsvpEnabled}
+              onClick={() => setRsvpEnabled((v) => !v)}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                rsvpEnabled ? 'bg-primary' : 'bg-input'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow-lg ring-0 transition duration-200 ${
+                  rsvpEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`}
               />
-            </div>
+            </button>
           </div>
-        </CardContent>
+        </CardHeader>
+        {rsvpEnabled && (
+          <CardContent className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="rsvpOpensAt">오픈 일시</Label>
+                <Input
+                  id="rsvpOpensAt"
+                  type="datetime-local"
+                  value={rsvpOpensAt}
+                  onChange={(e) => setRsvpOpensAt(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="rsvpClosesAt">마감 일시</Label>
+                <Input
+                  id="rsvpClosesAt"
+                  type="datetime-local"
+                  value={rsvpClosesAt}
+                  onChange={(e) => setRsvpClosesAt(e.target.value)}
+                />
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">기간을 설정하지 않으면 상시 접수됩니다</p>
+          </CardContent>
+        )}
       </Card>
 
       <div className="flex justify-end">
