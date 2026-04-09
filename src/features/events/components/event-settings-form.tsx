@@ -620,11 +620,9 @@ export function EventSettingsForm({ event }: EventSettingsFormProps) {
             {STATUS_LABEL[event.status] ?? event.status}
           </Badge>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <MoreHorizontal className="h-4 w-4" />
-                <span className="sr-only">더보기</span>
-              </Button>
+            <DropdownMenuTrigger render={<Button variant="ghost" size="icon" />}>
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">더보기</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
