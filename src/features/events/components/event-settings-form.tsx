@@ -3,15 +3,16 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { MoreHorizontal } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import {
   updateEventBasicAction,
   updateEventScheduleAction,
@@ -557,14 +558,30 @@ function FeaturesTab({ event }: { event: AdminEventDto }) {
   );
 }
 
-// ── Danger Zone Tab ───────────────────────────────────────────────────────────
+// ── Main Form ─────────────────────────────────────────────────────────────────
 
-function DangerZoneTab({ event }: { event: AdminEventDto }) {
+const STATUS_LABEL: Record<string, string> = {
+  draft: '초안',
+  scheduled: '예약됨',
+  published: '공개됨',
+  archived: '보관됨',
+};
+
+const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  draft: 'secondary',
+  scheduled: 'outline',
+  published: 'default',
+  archived: 'secondary',
+};
+
+export function EventSettingsForm({ event }: EventSettingsFormProps) {
   const router = useRouter();
   const [archivePending, startArchiveTransition] = useTransition();
   const [deletePending, startDeleteTransition] = useTransition();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmText, setConfirmText] = useState('');
+
+  const isArchived = event.status === 'archived';
 
   function handleArchive() {
     startArchiveTransition(async () => {
@@ -591,104 +608,6 @@ function DangerZoneTab({ event }: { event: AdminEventDto }) {
     });
   }
 
-  const isArchived = event.status === 'archived';
-
-  return (
-    <div className="space-y-4">
-      {/* Archive */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">이벤트 보관</CardTitle>
-          <CardDescription>
-            이벤트를 보관하면 공개 페이지에서 숨겨지고 더 이상 편집할 수 없습니다.
-            보관된 이벤트는 나중에 복원할 수 있습니다.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="outline"
-            onClick={handleArchive}
-            disabled={archivePending || isArchived}
-          >
-            {isArchived ? '이미 보관된 이벤트' : archivePending ? '보관 중...' : '이벤트 보관'}
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Separator />
-
-      {/* Delete */}
-      <Card className="border-destructive/50">
-        <CardHeader>
-          <CardTitle className="text-base text-destructive">이벤트 삭제</CardTitle>
-          <CardDescription>
-            이벤트를 삭제하면 모든 게스트, RSVP, 메시지, 리포트 데이터가 영구적으로 삭제됩니다.
-            이 작업은 되돌릴 수 없습니다.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-            <DialogTrigger render={<Button variant="destructive" />}>
-              이벤트 삭제
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>정말로 삭제하시겠습니까?</DialogTitle>
-                <DialogDescription>
-                  이 작업은 되돌릴 수 없습니다. 이벤트와 관련된 모든 데이터가 영구 삭제됩니다.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-3 py-2">
-                <p className="text-sm text-muted-foreground">
-                  확인을 위해 이벤트 슬러그{' '}
-                  <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs font-semibold">
-                    {event.slug}
-                  </code>
-                  를 입력해주세요.
-                </p>
-                <Input
-                  value={confirmText}
-                  onChange={(e) => setConfirmText(e.target.value)}
-                  placeholder={event.slug}
-                />
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-                  취소
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={handleDelete}
-                  disabled={confirmText !== event.slug || deletePending}
-                >
-                  {deletePending ? '삭제 중...' : '영구 삭제'}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-// ── Main Form ─────────────────────────────────────────────────────────────────
-
-const STATUS_LABEL: Record<string, string> = {
-  draft: '초안',
-  scheduled: '예약됨',
-  published: '공개됨',
-  archived: '보관됨',
-};
-
-const STATUS_VARIANT: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  draft: 'secondary',
-  scheduled: 'outline',
-  published: 'default',
-  archived: 'secondary',
-};
-
-export function EventSettingsForm({ event }: EventSettingsFormProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -696,19 +615,43 @@ export function EventSettingsForm({ event }: EventSettingsFormProps) {
           <h1 className="text-2xl font-bold">이벤트 설정</h1>
           <p className="mt-1 text-sm text-muted-foreground">{event.title}</p>
         </div>
-        <Badge variant={STATUS_VARIANT[event.status] ?? 'secondary'}>
-          {STATUS_LABEL[event.status] ?? event.status}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant={STATUS_VARIANT[event.status] ?? 'secondary'}>
+            {STATUS_LABEL[event.status] ?? event.status}
+          </Badge>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">더보기</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={handleArchive}
+                disabled={isArchived || archivePending}
+              >
+                {archivePending ? '보관 중...' : isArchived ? '이미 보관된 이벤트' : '이벤트 보관'}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="text-destructive focus:text-destructive"
+                onClick={() => setDeleteOpen(true)}
+              >
+                이벤트 삭제
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <Tabs defaultValue="basic">
-        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5">
           <TabsTrigger value="basic">기본</TabsTrigger>
           <TabsTrigger value="schedule">일정</TabsTrigger>
           <TabsTrigger value="visibility">공개</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
           <TabsTrigger value="features">기능</TabsTrigger>
-          <TabsTrigger value="danger">위험</TabsTrigger>
         </TabsList>
 
         <div className="mt-6">
@@ -727,11 +670,45 @@ export function EventSettingsForm({ event }: EventSettingsFormProps) {
           <TabsContent value="features">
             <FeaturesTab event={event} />
           </TabsContent>
-          <TabsContent value="danger">
-            <DangerZoneTab event={event} />
-          </TabsContent>
         </div>
       </Tabs>
+
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>정말로 삭제하시겠습니까?</DialogTitle>
+            <DialogDescription>
+              이 작업은 되돌릴 수 없습니다. 이벤트와 관련된 모든 데이터가 영구 삭제됩니다.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-sm text-muted-foreground">
+              확인을 위해 이벤트 슬러그{' '}
+              <code className="rounded bg-muted px-1 py-0.5 font-mono text-xs font-semibold">
+                {event.slug}
+              </code>
+              를 입력해주세요.
+            </p>
+            <Input
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder={event.slug}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)}>
+              취소
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={confirmText !== event.slug || deletePending}
+            >
+              {deletePending ? '삭제 중...' : '영구 삭제'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
