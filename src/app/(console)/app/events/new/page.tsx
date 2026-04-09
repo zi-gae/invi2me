@@ -22,8 +22,7 @@ export default function NewEventPage() {
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof CreateEventForm, string>>>({});
 
   const handleTitleChange = (title: string) => {
-    const slug = title.toLowerCase().replace(/[^a-z0-9가-힣]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
-    setForm(f => ({ ...f, title, slug }));
+    setForm(f => ({ ...f, title }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
