@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { getAdminEventById } from '@/features/events/queries/event.queries';
 import { getGuestCount } from '@/features/guests/queries/guest.queries';
 import { getRsvpSummary } from '@/features/rsvp/queries/rsvp.queries';
@@ -46,15 +45,6 @@ const EVENT_TYPE_LABEL: Record<string, string> = {
   party: '파티',
   conference: '컨퍼런스',
 };
-
-const NAV_TABS = [
-  { label: '편집기', href: 'editor' },
-  { label: '게스트', href: 'guests' },
-  { label: 'RSVP', href: 'rsvps' },
-  { label: '체크인', href: 'checkin' },
-  { label: '리포트', href: 'reports' },
-  { label: '설정', href: 'settings' },
-];
 
 function formatDate(dateStr: string | null): string {
   if (!dateStr) return '-';
@@ -152,21 +142,6 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           </Card>
         ))}
       </div>
-
-      {/* Navigation Tabs */}
-      <div className="flex gap-1 overflow-x-auto rounded-lg border bg-muted p-1">
-        {NAV_TABS.map((tab) => (
-          <Link
-            key={tab.href}
-            href={`/app/events/${eventId}/${tab.href}`}
-            className="rounded-md px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </div>
-
-      <Separator />
 
       {/* Event Info */}
       <Card>
