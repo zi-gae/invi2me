@@ -106,7 +106,7 @@ type RowFields<T> = {
   };
 };
 
-interface ArrayFieldProps<T extends Record<string, string>> {
+interface ArrayFieldProps<T extends object> {
   label: string;
   items: T[];
   onChange: (items: T[]) => void;
@@ -115,7 +115,7 @@ interface ArrayFieldProps<T extends Record<string, string>> {
   addLabel?: string;
 }
 
-export function ArrayField<T extends Record<string, string>>({
+export function ArrayField<T extends object>({
   label,
   items,
   onChange,
@@ -149,7 +149,7 @@ export function ArrayField<T extends Record<string, string>>({
                 <Input
                   key={String(key)}
                   type={field.type ?? 'text'}
-                  value={item[key] ?? ''}
+                  value={(item[key] as string) ?? ''}
                   onChange={(e) => updateRow(i, key, e.target.value)}
                   placeholder={field.placeholder ?? field.label}
                   className="h-7 text-xs"
