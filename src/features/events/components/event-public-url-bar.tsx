@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Check, Copy, ExternalLink } from 'lucide-react';
 
 interface EventPublicUrlBarProps {
@@ -9,20 +9,18 @@ interface EventPublicUrlBarProps {
 
 export function EventPublicUrlBar({ slug }: EventPublicUrlBarProps) {
   const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState('');
 
-  const publicUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}/${slug}`
-      : `/${slug}`;
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
+  const publicUrl = origin ? `${origin}/${slug}` : `/${slug}`;
 
   const handleCopy = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const url =
-      typeof window !== 'undefined'
-        ? `${window.location.origin}/${slug}`
-        : `/${slug}`;
-    await navigator.clipboard.writeText(url);
+    await navigator.clipboard.writeText(`${window.location.origin}/${slug}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
