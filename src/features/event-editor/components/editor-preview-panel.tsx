@@ -16,9 +16,9 @@ export function EditorPreviewPanel() {
   }
 
   return (
-    <div className="flex h-full flex-col items-center bg-stone-100 py-6">
-      {/* 모바일 프레임 */}
-      <div className="w-[375px] flex-1 overflow-hidden rounded-[2rem] border-4 border-stone-800 bg-white shadow-2xl">
+    <div className="flex h-full flex-col items-center justify-center bg-stone-100">
+      {/* 모바일 프레임 — iPhone 비율 375×812 */}
+      <div className="h-203 w-93.75 overflow-hidden rounded-[2rem] border-4 border-stone-800 bg-white shadow-2xl">
         {/* 노치 */}
         <div className="flex h-7 items-center justify-center bg-stone-800">
           <div className="h-3 w-20 rounded-full bg-stone-700" />
