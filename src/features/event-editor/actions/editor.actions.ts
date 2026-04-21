@@ -98,3 +98,14 @@ export async function publishPageAction(eventId: string, pageId: string) {
   revalidatePath(`/app/events/${eventId}/editor`);
   return { success: true, versionNo: version.versionNo };
 }
+
+export async function updateSectionPropsAction(
+  eventId: string,
+  sectionId: string,
+  propsJson: Record<string, unknown>,
+) {
+  await requireEventPermission(eventId, 'event.edit');
+  await updateSection(sectionId, { propsJson });
+  revalidatePath(`/app/events/${eventId}/editor`);
+  return { success: true };
+}
