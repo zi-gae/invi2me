@@ -114,3 +114,13 @@ export async function listRsvpResponses(eventId: string): Promise<AdminRsvpRespo
     updatedAt: row.response.updatedAt,
   }));
 }
+
+/** Get existing RSVP response for a specific guest */
+export async function getExistingRsvpResponse(eventId: string, guestId: string) {
+  const [response] = await db
+    .select()
+    .from(rsvpResponses)
+    .where(and(eq(rsvpResponses.eventId, eventId), eq(rsvpResponses.guestId, guestId)))
+    .limit(1);
+  return response ?? null;
+}

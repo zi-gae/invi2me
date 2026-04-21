@@ -57,7 +57,7 @@ export default async function RsvpsPage({ params }: RsvpsPageProps) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="h-full overflow-y-auto space-y-6 px-8 pb-8">
       {/* Header */}
       <h1 className="text-2xl font-bold">RSVP 응답 현황</h1>
 

@@ -62,6 +62,7 @@ export default function NewEventPage() {
   };
 
   return (
+    <div className="flex-1 overflow-y-auto p-8">
     <div className="mx-auto max-w-lg space-y-6">
       <div className="flex items-center gap-3">
         <Link href="/app/events" className="text-sm text-muted-foreground hover:text-foreground">
@@ -130,6 +131,7 @@ export default function NewEventPage() {
           </button>
         </div>
       </form>
+    </div>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
 
   if (pages.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="h-full overflow-y-auto space-y-6 px-8 pb-8">
         <h1 className="text-2xl font-bold">페이지 편집기</h1>
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16">
           <Layout className="size-10 text-muted-foreground" />
@@ -109,8 +109,8 @@ export default async function EditorPage({ params }: EditorPageProps) {
   return (
     <EditorSectionsProvider initialSections={sectionDtos}>
       {/* Desktop: side-by-side */}
-      <div className="hidden h-[calc(100dvh-4rem)] lg:grid lg:grid-cols-[1fr_1fr] lg:gap-0">
-        <div className="overflow-y-auto border-r">
+      <div className="hidden h-full lg:grid lg:grid-cols-[1fr_1fr] lg:gap-0">
+        <div className="overflow-hidden border-r">
           {previewPanel}
         </div>
         <div className="overflow-y-auto p-6">
@@ -119,7 +119,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
       </div>
 
       {/* Mobile / Tablet: tabs */}
-      <div className="lg:hidden">
+      <div className="h-full lg:hidden">
         <EditorLayoutTabs
           previewPanel={previewPanel}
           sectionListPanel={sectionListPanel}

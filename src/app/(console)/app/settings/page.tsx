@@ -15,7 +15,7 @@ export default async function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 overflow-y-auto space-y-6 p-8">
       <div>
         <h1 className="text-2xl font-bold">설정</h1>
         <p className="text-sm text-muted-foreground">워크스페이스 정보를 확인합니다.</p>

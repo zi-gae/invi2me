@@ -10,7 +10,7 @@ interface EditorLayoutTabsProps {
 
 export function EditorLayoutTabs({ previewPanel, sectionListPanel }: EditorLayoutTabsProps) {
   return (
-    <Tabs defaultValue="sections">
+    <Tabs defaultValue="sections" className="h-full">
       <TabsList className="mx-4 mt-2">
         <TabsTrigger value="sections">
           <List className="size-4" />
@@ -22,14 +22,14 @@ export function EditorLayoutTabs({ previewPanel, sectionListPanel }: EditorLayou
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="sections">
+      <TabsContent value="sections" className="min-h-0 overflow-y-auto">
         <div className="p-4">
           {sectionListPanel}
         </div>
       </TabsContent>
 
-      <TabsContent value="preview">
-        <div className="h-[calc(100dvh-7rem)]">
+      <TabsContent value="preview" className="min-h-0">
+        <div className="h-full">
           {previewPanel}
         </div>
       </TabsContent>

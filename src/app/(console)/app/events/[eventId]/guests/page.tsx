@@ -63,7 +63,7 @@ export default async function GuestsPage({ params }: GuestsPageProps) {
   const guests = await listGuestsByEvent(eventId);
 
   return (
-    <div className="space-y-6">
+    <div className="h-full overflow-y-auto space-y-6 px-8 pb-8">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

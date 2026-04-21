@@ -51,7 +51,7 @@ export default async function EventsListPage() {
 
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 overflow-y-auto space-y-6 p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">내 이벤트</h1>
         <Button render={<Link href="/app/events/new" />} nativeButton={false}>
