@@ -9,6 +9,7 @@ import { AddSectionDialog } from '@/features/event-editor/components/add-section
 import { SortableSectionList } from '@/features/event-editor/components/sortable-section-list';
 import { EditorPreviewPanel } from '@/features/event-editor/components/editor-preview-panel';
 import { EditorLayoutTabs } from '@/features/event-editor/components/editor-layout-tabs';
+import { EditorSectionsProvider } from '@/features/event-editor/components/editor-sections-context';
 import type { SectionBlockDto } from '@/features/event-editor/types/editor.dto';
 
 interface EditorPageProps {
@@ -65,9 +66,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
     visibilityRules: (s.visibilityRules as Record<string, unknown>) ?? {},
   }));
 
-  const previewPanel = (
-    <EditorPreviewPanel sections={sectionDtos} />
-  );
+  const previewPanel = <EditorPreviewPanel />;
 
   const sectionListPanel = (
     <div className="space-y-6">
@@ -102,23 +101,13 @@ export default async function EditorPage({ params }: EditorPageProps) {
           </p>
         </div>
       ) : (
-        <SortableSectionList
-          eventId={eventId}
-          sections={sections.map((s) => ({
-            id: s.id,
-            sectionType: s.sectionType,
-            sectionKey: s.sectionKey,
-            sortOrder: s.sortOrder,
-            isEnabled: s.isEnabled,
-            propsJson: (s.propsJson as Record<string, unknown>) ?? {},
-          }))}
-        />
+        <SortableSectionList eventId={eventId} />
       )}
     </div>
   );
 
   return (
-    <>
+    <EditorSectionsProvider initialSections={sectionDtos}>
       {/* Desktop: side-by-side */}
       <div className="hidden h-[calc(100dvh-4rem)] lg:grid lg:grid-cols-[1fr_1fr] lg:gap-0">
         <div className="overflow-y-auto border-r">
@@ -136,6 +125,6 @@ export default async function EditorPage({ params }: EditorPageProps) {
           sectionListPanel={sectionListPanel}
         />
       </div>
-    </>
+    </EditorSectionsProvider>
   );
 }

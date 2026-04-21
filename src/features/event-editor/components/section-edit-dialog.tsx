@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { updateSectionPropsAction } from '../actions/editor.actions';
 import { SectionPropsForm } from './section-props-form';
+import { useEditorSections } from './editor-sections-context';
 
 const SECTION_TYPE_LABEL: Record<string, string> = {
   hero: '히어로',
@@ -50,6 +51,7 @@ interface SectionEditDialogProps {
 
 export function SectionEditDialog({ eventId, section }: SectionEditDialogProps) {
   const router = useRouter();
+  const { setSections } = useEditorSections();
   const [open, setOpen] = useState(false);
   const [props, setProps] = useState<Record<string, unknown>>(section.propsJson);
   const [isPending, startTransition] = useTransition();
@@ -68,6 +70,9 @@ export function SectionEditDialog({ eventId, section }: SectionEditDialogProps) 
     startTransition(async () => {
       try {
         await updateSectionPropsAction(eventId, section.id, props);
+        setSections((prev) =>
+          prev.map((s) => s.id === section.id ? { ...s, propsJson: props } : s)
+        );
         toast.success('섹션이 저장되었습니다.');
         setOpen(false);
         router.refresh();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { ImagePlus, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -23,6 +23,7 @@ export function ImageUploadField({
 }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const upload = useCallback(
     async (file: File) => {
@@ -54,15 +55,13 @@ export function ImageUploadField({
   );
 
   function openFilePicker() {
-    console.log('Opening file picker'); 
-    const fileInput = document.createElement('input');
-    fileInput.setAttribute('type', 'file');
-    fileInput.setAttribute('accept', ACCEPT_IMAGE_TYPES.join(','));
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files?.[0];
-      if (file) upload(file);
-    });
-    fileInput.click();
+    fileInputRef.current?.click();
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) upload(file);
+    e.target.value = '';
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -91,6 +90,14 @@ export function ImageUploadField({
 
   return (
     <div className="space-y-1.5">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPT_IMAGE_TYPES.join(',')}
+        onChange={handleFileChange}
+        className="absolute size-0 opacity-0"
+        tabIndex={-1}
+      />
       <label className="text-xs font-medium text-stone-600">
         {label}
         {hint && (
@@ -170,6 +177,7 @@ interface ImageUploadCellProps {
 
 export function ImageUploadCell({ value, onChange, eventId }: ImageUploadCellProps) {
   const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const upload = useCallback(
     async (file: File) => {
@@ -197,19 +205,25 @@ export function ImageUploadCell({ value, onChange, eventId }: ImageUploadCellPro
   );
 
   function openFilePicker() {
-    const fileInput = document.createElement('input');
-    fileInput.setAttribute('type', 'file');
-    fileInput.setAttribute('accept', ACCEPT_IMAGE_TYPES.join(','));
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files?.[0];
-      if (file) upload(file);
-    });
-    console.log('Opening file picker', fileInput); 
-    fileInput.click();
+    fileInputRef.current?.click();
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) upload(file);
+    e.target.value = '';
   }
 
   return (
     <div className="flex items-center gap-1.5">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={ACCEPT_IMAGE_TYPES.join(',')}
+        onChange={handleFileChange}
+        className="absolute size-0 opacity-0"
+        tabIndex={-1}
+      />
       {value ? (
         <div className="group relative size-10 shrink-0 overflow-hidden rounded border border-stone-200">
           <img src={value} alt="" className="size-full object-cover" />

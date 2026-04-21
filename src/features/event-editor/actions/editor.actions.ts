@@ -9,6 +9,7 @@ import {
   updateSection,
   deleteSection,
   publishPage,
+  reorderSectionsById,
 } from '../queries/editor.queries';
 
 const DEFAULT_SECTIONS = [
@@ -115,12 +116,7 @@ export async function reorderSectionsAction(
   sectionIds: string[],
 ) {
   await requireEventPermission(eventId, 'event.edit');
-
-  // 각 섹션의 sortOrder를 배열 인덱스로 업데이트
-  await Promise.all(
-    sectionIds.map((id, index) => updateSection(id, { sortOrder: index }))
-  );
-
+  await reorderSectionsById(sectionIds);
   revalidatePath(`/app/events/${eventId}/editor`);
   return { success: true };
 }

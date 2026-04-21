@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Trash2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,11 +19,14 @@ export function SectionActions({
   isEnabled: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
+  const [optimisticEnabled, setOptimisticEnabled] = useState(isEnabled);
   const router = useRouter();
 
   function handleToggle() {
+    const next = !optimisticEnabled;
+    setOptimisticEnabled(next);
     startTransition(async () => {
-      await toggleSectionAction(eventId, sectionId, !isEnabled);
+      await toggleSectionAction(eventId, sectionId, next);
       router.refresh();
     });
   }
@@ -43,9 +46,9 @@ export function SectionActions({
         size="sm"
         onClick={handleToggle}
         disabled={isPending}
-        title={isEnabled ? '비활성화' : '활성화'}
+        title={optimisticEnabled ? '비활성화' : '활성화'}
       >
-        {isEnabled ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
+        {optimisticEnabled ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
       </Button>
       <Button
         variant="ghost"

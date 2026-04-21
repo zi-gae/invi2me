@@ -127,6 +127,19 @@ export async function reorderSections(
   });
 }
 
+/** Reorder sections by ID only (no eventPageId filter), in a single transaction */
+export async function reorderSectionsById(orderedIds: string[]) {
+  await db.transaction(async (tx) => {
+    const now = new Date().toISOString();
+    for (let i = 0; i < orderedIds.length; i++) {
+      await tx
+        .update(eventSections)
+        .set({ sortOrder: i, updatedAt: now })
+        .where(eq(eventSections.id, orderedIds[i]));
+    }
+  });
+}
+
 /**
  * Publish a page:
  * 1. Snapshot current sections into a new version

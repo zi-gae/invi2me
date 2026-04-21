@@ -1,11 +1,10 @@
-import type { SectionBlockDto } from '../types/editor.dto';
+'use client';
+
 import { SectionRenderer } from './section-renderer';
+import { useEditorSections } from './editor-sections-context';
 
-interface EditorPreviewPanelProps {
-  sections: SectionBlockDto[];
-}
-
-export function EditorPreviewPanel({ sections }: EditorPreviewPanelProps) {
+export function EditorPreviewPanel() {
+  const { sections } = useEditorSections();
   const enabledSections = sections.filter((s) => s.isEnabled);
 
   if (enabledSections.length === 0) {

@@ -18,24 +18,15 @@ import {
 } from '@dnd-kit/sortable';
 import { SortableSectionItem, StaticSectionItem } from './sortable-section-item';
 import { reorderSectionsAction } from '../actions/editor.actions';
-
-interface SectionData {
-  id: string;
-  sectionType: string;
-  sectionKey: string;
-  sortOrder: number;
-  isEnabled: boolean;
-  propsJson: Record<string, unknown>;
-}
+import { useEditorSections } from './editor-sections-context';
 
 interface SortableSectionListProps {
   eventId: string;
-  sections: SectionData[];
 }
 
-export function SortableSectionList({ eventId, sections: initialSections }: SortableSectionListProps) {
+export function SortableSectionList({ eventId }: SortableSectionListProps) {
+  const { sections, setSections } = useEditorSections();
   const [mounted, setMounted] = useState(false);
-  const [sections, setSections] = useState(initialSections);
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -57,26 +48,23 @@ export function SortableSectionList({ eventId, sections: initialSections }: Sort
       const oldIndex = sections.findIndex((s) => s.id === active.id);
       const newIndex = sections.findIndex((s) => s.id === over.id);
 
-      // Optimistic update
+      const prevSections = sections;
       const newSections = arrayMove(sections, oldIndex, newIndex);
       setSections(newSections);
 
-      // Persist to server
       setIsPending(true);
       try {
         const orderedIds = newSections.map((s) => s.id);
         await reorderSectionsAction(eventId, orderedIds);
       } catch {
-        // Rollback on failure
-        setSections(sections);
+        setSections(prevSections);
       } finally {
         setIsPending(false);
       }
     },
-    [sections, eventId]
+    [sections, setSections, eventId]
   );
 
-  // SSR時はDnDなしで静的リストのみ描画し、hydration mismatchを回避
   if (!mounted) {
     return (
       <div className="space-y-3">
