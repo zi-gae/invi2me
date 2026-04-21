@@ -48,11 +48,13 @@ export default async function EventsListPage() {
 
   const events = await listEventsByWorkspace(workspace.id);
 
+
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">내 이벤트</h1>
-        <Button render={<Link href="/app/events/new" />}>
+        <Button render={<Link href="/app/events/new" />} nativeButton={false}>
           <Plus className="mr-1.5 size-4" />
           새 이벤트 만들기
         </Button>
@@ -65,7 +67,7 @@ export default async function EventsListPage() {
           <p className="mt-1 text-sm text-muted-foreground">
             첫 번째 이벤트를 만들어 보세요.
           </p>
-          <Button render={<Link href="/app/events/new" />} className="mt-4" size="sm">
+          <Button render={<Link href="/app/events/new" />} nativeButton={false} className="mt-4" size="sm">
             <Plus className="mr-1.5 size-4" />
             새 이벤트 만들기
           </Button>
