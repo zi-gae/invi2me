@@ -1,5 +1,4 @@
 import { Layout } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { db } from '@/db';
 import { eventPages, eventSections } from '@/db/schema/content';
@@ -7,8 +6,7 @@ import { eq } from 'drizzle-orm';
 import { CreatePageButton } from '@/features/event-editor/components/create-page-button';
 import { PublishButton } from '@/features/event-editor/components/publish-button';
 import { AddSectionDialog } from '@/features/event-editor/components/add-section-dialog';
-import { SectionActions } from '@/features/event-editor/components/section-actions';
-import { SectionEditDialog } from '@/features/event-editor/components/section-edit-dialog';
+import { SortableSectionList } from '@/features/event-editor/components/sortable-section-list';
 import { EditorPreviewPanel } from '@/features/event-editor/components/editor-preview-panel';
 import { EditorLayoutTabs } from '@/features/event-editor/components/editor-layout-tabs';
 import type { SectionBlockDto } from '@/features/event-editor/types/editor.dto';
@@ -16,28 +14,6 @@ import type { SectionBlockDto } from '@/features/event-editor/types/editor.dto';
 interface EditorPageProps {
   params: Promise<{ eventId: string }>;
 }
-
-const SECTION_TYPE_LABEL: Record<string, string> = {
-  hero: '히어로',
-  countdown: '카운트다운',
-  invitation_message: '초대 메시지',
-  couple_profile: '커플 프로필',
-  event_schedule: '일정',
-  location_map: '위치/지도',
-  transport_guide: '교통 안내',
-  parking_info: '주차 안내',
-  gallery: '갤러리',
-  video: '동영상',
-  faq: 'FAQ',
-  contact_panel: '연락처',
-  gift_account: '축의금 계좌',
-  guestbook: '방명록',
-  rsvp_form: 'RSVP 폼',
-  timeline: '타임라인',
-  dress_code: '드레스 코드',
-  accommodation_guide: '숙소 안내',
-  notice_banner: '공지 배너',
-};
 
 export default async function EditorPage({ params }: EditorPageProps) {
   const { eventId } = await params;
@@ -126,47 +102,17 @@ export default async function EditorPage({ params }: EditorPageProps) {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {sections.map((section) => (
-            <Card key={section.id}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    #{section.sortOrder}
-                  </span>
-                  <CardTitle className="text-base">{section.sectionKey}</CardTitle>
-                  <Badge variant="outline">
-                    {SECTION_TYPE_LABEL[section.sectionType] ?? section.sectionType}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant={section.isEnabled ? 'default' : 'secondary'}>
-                    {section.isEnabled ? '활성' : '비활성'}
-                  </Badge>
-                  <SectionEditDialog
-                    eventId={eventId}
-                    section={{
-                      id: section.id,
-                      sectionType: section.sectionType,
-                      sectionKey: section.sectionKey,
-                      propsJson: (section.propsJson as Record<string, unknown>) ?? {},
-                    }}
-                  />
-                  <SectionActions
-                    eventId={eventId}
-                    sectionId={section.id}
-                    isEnabled={section.isEnabled}
-                  />
-                </div>
-              </CardHeader>
-              <CardContent className="pb-3">
-                <p className="text-sm text-muted-foreground">
-                  타입: {section.sectionType} · 정렬: {section.sortOrder}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <SortableSectionList
+          eventId={eventId}
+          sections={sections.map((s) => ({
+            id: s.id,
+            sectionType: s.sectionType,
+            sectionKey: s.sectionKey,
+            sortOrder: s.sortOrder,
+            isEnabled: s.isEnabled,
+            propsJson: (s.propsJson as Record<string, unknown>) ?? {},
+          }))}
+        />
       )}
     </div>
   );

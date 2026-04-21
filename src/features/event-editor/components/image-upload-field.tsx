@@ -1,8 +1,10 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ImagePlus, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
+
+const ACCEPT_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
 interface ImageUploadFieldProps {
   label: string;
@@ -19,7 +21,6 @@ export function ImageUploadField({
   eventId,
   hint,
 }: ImageUploadFieldProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
@@ -52,11 +53,16 @@ export function ImageUploadField({
     [eventId, onChange],
   );
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) upload(file);
-    // reset input so same file can be re-selected
-    e.target.value = '';
+  function openFilePicker() {
+    console.log('Opening file picker'); 
+    const fileInput = document.createElement('input');
+    fileInput.setAttribute('type', 'file');
+    fileInput.setAttribute('accept', ACCEPT_IMAGE_TYPES.join(','));
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (file) upload(file);
+    });
+    fileInput.click();
   }
 
   function handleDrop(e: React.DragEvent) {
@@ -92,7 +98,6 @@ export function ImageUploadField({
         )}
       </label>
 
-      {/* 미리보기 */}
       {value ? (
         <div className="group relative overflow-hidden rounded-lg border border-stone-200">
           <img
@@ -103,7 +108,7 @@ export function ImageUploadField({
           <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
             <button
               type="button"
-              onClick={() => inputRef.current?.click()}
+              onClick={openFilePicker}
               disabled={uploading}
               className="rounded-full bg-white/90 p-2 text-stone-700 shadow-sm transition-colors hover:bg-white"
               aria-label="이미지 변경"
@@ -125,10 +130,9 @@ export function ImageUploadField({
           </div>
         </div>
       ) : (
-        /* 업로드 드롭존 */
         <button
           type="button"
-          onClick={() => inputRef.current?.click()}
+          onClick={openFilePicker}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -152,14 +156,6 @@ export function ImageUploadField({
           </span>
         </button>
       )}
-
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
-        onChange={handleFileChange}
-        className="hidden"
-      />
     </div>
   );
 }
@@ -173,7 +169,6 @@ interface ImageUploadCellProps {
 }
 
 export function ImageUploadCell({ value, onChange, eventId }: ImageUploadCellProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
   const upload = useCallback(
@@ -201,10 +196,16 @@ export function ImageUploadCell({ value, onChange, eventId }: ImageUploadCellPro
     [eventId, onChange],
   );
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) upload(file);
-    e.target.value = '';
+  function openFilePicker() {
+    const fileInput = document.createElement('input');
+    fileInput.setAttribute('type', 'file');
+    fileInput.setAttribute('accept', ACCEPT_IMAGE_TYPES.join(','));
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (file) upload(file);
+    });
+    console.log('Opening file picker', fileInput); 
+    fileInput.click();
   }
 
   return (
@@ -223,9 +224,9 @@ export function ImageUploadCell({ value, onChange, eventId }: ImageUploadCellPro
       ) : null}
       <button
         type="button"
-        onClick={() => inputRef.current?.click()}
+        onClick={openFilePicker}
         disabled={uploading}
-        className="flex h-7 items-center gap-1 rounded-md border border-stone-200 bg-stone-50 px-2 text-xs text-stone-500 hover:border-stone-400 disabled:cursor-wait disabled:opacity-50"
+        className={`flex h-7 items-center gap-1 rounded-md border border-stone-200 bg-stone-50 px-2 text-xs text-stone-500 hover:border-stone-400 disabled:cursor-wait disabled:opacity-50`}
       >
         {uploading ? (
           <Loader2 className="size-3 animate-spin" />
@@ -234,13 +235,6 @@ export function ImageUploadCell({ value, onChange, eventId }: ImageUploadCellPro
         )}
         {uploading ? '업로드...' : value ? '변경' : '업로드'}
       </button>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp,image/gif"
-        onChange={handleChange}
-        className="hidden"
-      />
     </div>
   );
 }

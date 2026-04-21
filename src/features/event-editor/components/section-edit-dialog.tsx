@@ -110,7 +110,7 @@ export function SectionEditDialog({ eventId, section }: SectionEditDialogProps) 
           />
         </div>
 
-        <DialogFooter className="shrink-0" showCloseButton>
+        <DialogFooter className="mx-0 mb-0 shrink-0 px-5 py-4" showCloseButton>
           <Button onClick={handleSave} disabled={isPending} size="sm">
             {isPending && <Loader2 className="mr-2 size-3.5 animate-spin" />}
             저장

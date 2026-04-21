@@ -109,3 +109,18 @@ export async function updateSectionPropsAction(
   revalidatePath(`/app/events/${eventId}/editor`);
   return { success: true };
 }
+
+export async function reorderSectionsAction(
+  eventId: string,
+  sectionIds: string[],
+) {
+  await requireEventPermission(eventId, 'event.edit');
+
+  // 각 섹션의 sortOrder를 배열 인덱스로 업데이트
+  await Promise.all(
+    sectionIds.map((id, index) => updateSection(id, { sortOrder: index }))
+  );
+
+  revalidatePath(`/app/events/${eventId}/editor`);
+  return { success: true };
+}
