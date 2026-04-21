@@ -1,0 +1,36 @@
+import type { SectionBlockDto } from '../types/editor.dto';
+import { SectionRenderer } from './section-renderer';
+
+interface EditorPreviewPanelProps {
+  sections: SectionBlockDto[];
+}
+
+export function EditorPreviewPanel({ sections }: EditorPreviewPanelProps) {
+  const enabledSections = sections.filter((s) => s.isEnabled);
+
+  if (enabledSections.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+        활성화된 섹션이 없습니다
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full flex-col items-center bg-stone-100 py-6">
+      {/* 모바일 프레임 */}
+      <div className="w-[375px] flex-1 overflow-hidden rounded-[2rem] border-4 border-stone-800 bg-white shadow-2xl">
+        {/* 노치 */}
+        <div className="flex h-7 items-center justify-center bg-stone-800">
+          <div className="h-3 w-20 rounded-full bg-stone-700" />
+        </div>
+        {/* 콘텐츠 */}
+        <div className="h-[calc(100%-1.75rem)] overflow-y-auto">
+          {enabledSections.map((section) => (
+            <SectionRenderer key={section.id} section={section} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -8,6 +8,10 @@ import { CreatePageButton } from '@/features/event-editor/components/create-page
 import { PublishButton } from '@/features/event-editor/components/publish-button';
 import { AddSectionDialog } from '@/features/event-editor/components/add-section-dialog';
 import { SectionActions } from '@/features/event-editor/components/section-actions';
+import { SectionEditDialog } from '@/features/event-editor/components/section-edit-dialog';
+import { EditorPreviewPanel } from '@/features/event-editor/components/editor-preview-panel';
+import { EditorLayoutTabs } from '@/features/event-editor/components/editor-layout-tabs';
+import type { SectionBlockDto } from '@/features/event-editor/types/editor.dto';
 
 interface EditorPageProps {
   params: Promise<{ eventId: string }>;
@@ -75,7 +79,21 @@ export default async function EditorPage({ params }: EditorPageProps) {
     ? Math.max(...sections.map((s) => s.sortOrder)) + 1
     : 0;
 
-  return (
+  const sectionDtos: SectionBlockDto[] = sections.map((s) => ({
+    id: s.id,
+    sectionType: s.sectionType,
+    sectionKey: s.sectionKey,
+    sortOrder: s.sortOrder,
+    isEnabled: s.isEnabled,
+    propsJson: (s.propsJson as Record<string, unknown>) ?? {},
+    visibilityRules: (s.visibilityRules as Record<string, unknown>) ?? {},
+  }));
+
+  const previewPanel = (
+    <EditorPreviewPanel sections={sectionDtos} />
+  );
+
+  const sectionListPanel = (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -125,6 +143,15 @@ export default async function EditorPage({ params }: EditorPageProps) {
                   <Badge variant={section.isEnabled ? 'default' : 'secondary'}>
                     {section.isEnabled ? '활성' : '비활성'}
                   </Badge>
+                  <SectionEditDialog
+                    eventId={eventId}
+                    section={{
+                      id: section.id,
+                      sectionType: section.sectionType,
+                      sectionKey: section.sectionKey,
+                      propsJson: (section.propsJson as Record<string, unknown>) ?? {},
+                    }}
+                  />
                   <SectionActions
                     eventId={eventId}
                     sectionId={section.id}
@@ -142,5 +169,27 @@ export default async function EditorPage({ params }: EditorPageProps) {
         </div>
       )}
     </div>
+  );
+
+  return (
+    <>
+      {/* Desktop: side-by-side */}
+      <div className="hidden h-[calc(100dvh-4rem)] lg:grid lg:grid-cols-[1fr_1fr] lg:gap-0">
+        <div className="overflow-y-auto border-r">
+          {previewPanel}
+        </div>
+        <div className="overflow-y-auto p-6">
+          {sectionListPanel}
+        </div>
+      </div>
+
+      {/* Mobile / Tablet: tabs */}
+      <div className="lg:hidden">
+        <EditorLayoutTabs
+          previewPanel={previewPanel}
+          sectionListPanel={sectionListPanel}
+        />
+      </div>
+    </>
   );
 }
