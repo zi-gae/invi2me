@@ -19,6 +19,7 @@ import {
   updateEventVisibilityAction,
   updateEventSeoAction,
   updateEventFeaturesAction,
+  updateEventIntegrationsAction,
   archiveEventAction,
   deleteEventAction,
 } from '../actions/event.actions';
@@ -497,6 +498,131 @@ function SeoTab({ event }: { event: AdminEventDto }) {
   );
 }
 
+// ── Integrations Tab ─────────────────────────────────────────────────────────
+
+function IntegrationsTab({ event }: { event: AdminEventDto }) {
+  const [isPending, startTransition] = useTransition();
+
+  const kakaoCalendar = event.integrations?.kakaoCalendar;
+  const [calendarEnabled, setCalendarEnabled] = useState(kakaoCalendar?.enabled ?? false);
+  const [calendarLabel, setCalendarLabel] = useState(kakaoCalendar?.buttonLabel ?? '내 캘린더에 저장');
+  const [calendarEventId, setCalendarEventId] = useState(kakaoCalendar?.eventId ?? '');
+
+  // kakaoPay — draft
+  const kakaoPay = event.integrations?.kakaoPay;
+  const [payEnabled] = useState(kakaoPay?.enabled ?? false);
+
+  function handleSave() {
+    startTransition(async () => {
+      const result = await updateEventIntegrationsAction(event.id, {
+        kakaoCalendar: {
+          enabled: calendarEnabled,
+          buttonLabel: calendarLabel,
+          eventId: calendarEventId || null,
+        },
+        kakaoPay: {
+          enabled: payEnabled,
+        },
+      });
+      if (result.success) {
+        toast.success('연동 설정이 저장되었습니다');
+      } else {
+        toast.error(result.error);
+      }
+    });
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* 카카오 캘린더 */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base">카카오 캘린더 저장</CardTitle>
+              <CardDescription>게스트가 예식 일정을 카카오 캘린더에 추가할 수 있습니다</CardDescription>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={calendarEnabled}
+              onClick={() => setCalendarEnabled((v) => !v)}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                calendarEnabled ? 'bg-primary' : 'bg-input'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow-lg ring-0 transition duration-200 ${
+                  calendarEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+        </CardHeader>
+        {calendarEnabled && (
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="calendarLabel">버튼 이름</Label>
+              <Input
+                id="calendarLabel"
+                value={calendarLabel}
+                onChange={(e) => setCalendarLabel(e.target.value)}
+                maxLength={50}
+                placeholder="내 캘린더에 저장"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="calendarEventId">카카오 캘린더 이벤트 ID</Label>
+              <Input
+                id="calendarEventId"
+                value={calendarEventId}
+                onChange={(e) => setCalendarEventId(e.target.value)}
+                placeholder="카카오 캘린더에서 생성한 공개 이벤트 ID"
+                className="font-mono text-sm"
+              />
+              <p className="text-xs text-muted-foreground">
+                카카오 캘린더 앱 또는 API에서 공개 이벤트를 생성한 뒤 ID를 입력하세요
+              </p>
+            </div>
+          </CardContent>
+        )}
+      </Card>
+
+      {/* 카카오페이 — draft */}
+      <Card className="opacity-60">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-base flex items-center gap-2">
+                카카오페이 송금
+                <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-normal text-muted-foreground">
+                  준비 중
+                </span>
+              </CardTitle>
+              <CardDescription>게스트가 카카오페이로 축의금을 보낼 수 있습니다</CardDescription>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={false}
+              disabled
+              className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-not-allowed items-center rounded-full border-2 border-transparent bg-input transition-colors duration-200"
+            >
+              <span className="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-background shadow-lg ring-0 transition duration-200 translate-x-0" />
+            </button>
+          </div>
+        </CardHeader>
+      </Card>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSave} disabled={isPending}>
+          {isPending ? '저장 중...' : '저장'}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // ── Features Tab ──────────────────────────────────────────────────────────────
 
 function FeaturesTab({ event }: { event: AdminEventDto }) {
@@ -644,11 +770,12 @@ export function EventSettingsForm({ event }: EventSettingsFormProps) {
       </div>
 
       <Tabs defaultValue="basic">
-        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-5">
+        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
           <TabsTrigger value="basic">기본</TabsTrigger>
           <TabsTrigger value="schedule">일정</TabsTrigger>
           <TabsTrigger value="visibility">공개</TabsTrigger>
           <TabsTrigger value="seo">SEO</TabsTrigger>
+          <TabsTrigger value="integrations">연동</TabsTrigger>
           <TabsTrigger value="features">기능</TabsTrigger>
         </TabsList>
 
@@ -664,6 +791,9 @@ export function EventSettingsForm({ event }: EventSettingsFormProps) {
           </TabsContent>
           <TabsContent value="seo">
             <SeoTab event={event} />
+          </TabsContent>
+          <TabsContent value="integrations">
+            <IntegrationsTab event={event} />
           </TabsContent>
           <TabsContent value="features">
             <FeaturesTab event={event} />
