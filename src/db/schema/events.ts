@@ -61,6 +61,16 @@ export const events = pgTable(
     seoTitle: text("seo_title"),
     seoDescription: text("seo_description"),
     ogImageUrl: text("og_image_url"),
+    integrations: jsonb("integrations").$type<{
+      kakaoCalendar?: {
+        enabled: boolean;
+        buttonLabel: string;
+        eventId: string | null;
+      };
+      kakaoPay?: {
+        enabled: boolean;
+      };
+    }>(),
     createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
       .notNull()
       .defaultNow(),
