@@ -59,3 +59,15 @@ export const updateEventFeaturesSchema = z.object({
   analyticsEnabled: z.boolean(),
 });
 export type UpdateEventFeaturesInput = z.infer<typeof updateEventFeaturesSchema>;
+
+export const updateEventIntegrationsSchema = z.object({
+  kakaoCalendar: z.object({
+    enabled: z.boolean(),
+    buttonLabel: z.string().min(1).max(50),
+    eventId: z.string().nullable(),
+  }).optional(),
+  kakaoPay: z.object({
+    enabled: z.boolean(),
+  }).optional(),
+});
+export type UpdateEventIntegrationsInput = z.infer<typeof updateEventIntegrationsSchema>;

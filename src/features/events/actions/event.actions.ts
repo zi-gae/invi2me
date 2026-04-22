@@ -11,6 +11,7 @@ import {
   updateEventVisibilitySchema,
   updateEventSeoSchema,
   updateEventFeaturesSchema,
+  updateEventIntegrationsSchema,
 } from '../schemas/event.schema';
 import type {
   CreateEventInput,
@@ -19,6 +20,7 @@ import type {
   UpdateEventVisibilityInput,
   UpdateEventSeoInput,
   UpdateEventFeaturesInput,
+  UpdateEventIntegrationsInput,
 } from '../schemas/event.schema';
 
 export type ActionResult = { success: true } | { success: false; error: string };
@@ -141,6 +143,20 @@ export async function updateEventFeaturesAction(
     await requireUser();
     const validated = updateEventFeaturesSchema.parse(input);
     await updateEvent(eventId, validated);
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e instanceof Error ? e.message : '저장에 실패했습니다' };
+  }
+}
+
+export async function updateEventIntegrationsAction(
+  eventId: string,
+  input: UpdateEventIntegrationsInput,
+): Promise<ActionResult> {
+  try {
+    await requireUser();
+    const validated = updateEventIntegrationsSchema.parse(input);
+    await updateEvent(eventId, { integrations: validated });
     return { success: true };
   } catch (e) {
     return { success: false, error: e instanceof Error ? e.message : '저장에 실패했습니다' };

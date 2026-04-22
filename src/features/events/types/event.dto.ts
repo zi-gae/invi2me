@@ -1,3 +1,18 @@
+export interface KakaoCalendarIntegration {
+  enabled: boolean;
+  buttonLabel: string;
+  eventId: string | null;
+}
+
+export interface KakaoPayIntegration {
+  enabled: boolean;
+}
+
+export interface EventIntegrations {
+  kakaoCalendar?: KakaoCalendarIntegration;
+  kakaoPay?: KakaoPayIntegration;
+}
+
 // Public DTO — shown on public event pages (no sensitive data)
 export interface PublicEventDto {
   slug: string;
@@ -14,6 +29,7 @@ export interface PublicEventDto {
   seoTitle: string | null;
   seoDescription: string | null;
   ogImageUrl: string | null;
+  integrations: EventIntegrations | null;
 }
 
 // Admin DTO — shown in console (includes internal fields)
@@ -45,6 +61,7 @@ export interface AdminEventDto {
   seoTitle: string | null;
   seoDescription: string | null;
   ogImageUrl: string | null;
+  integrations: EventIntegrations | null;
   createdAt: string;
   updatedAt: string;
   version: number;

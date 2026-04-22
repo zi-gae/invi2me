@@ -2,7 +2,7 @@ import { db } from '@/db';
 import { events, eventMemberships } from '@/db/schema/events';
 import { eq, and, desc, isNull } from 'drizzle-orm';
 import { EventNotFoundError } from '@/shared/lib/errors';
-import type { PublicEventDto, AdminEventDto } from '../types/event.dto';
+import type { PublicEventDto, AdminEventDto, EventIntegrations } from '../types/event.dto';
 
 /** Get published event by slug (for public pages) */
 export async function getPublicEventBySlug(slug: string): Promise<PublicEventDto> {
@@ -29,6 +29,7 @@ export async function getPublicEventBySlug(slug: string): Promise<PublicEventDto
     seoTitle: event.seoTitle,
     seoDescription: event.seoDescription,
     ogImageUrl: event.ogImageUrl,
+    integrations: (event.integrations as EventIntegrations) ?? null,
   };
 }
 
@@ -70,6 +71,7 @@ export async function getAdminEventById(eventId: string): Promise<AdminEventDto>
     seoTitle: event.seoTitle,
     seoDescription: event.seoDescription,
     ogImageUrl: event.ogImageUrl,
+    integrations: (event.integrations as EventIntegrations) ?? null,
     createdAt: event.createdAt,
     updatedAt: event.updatedAt,
     version: event.version,
@@ -131,6 +133,7 @@ export async function updateEvent(eventId: string, data: Partial<{
   seoTitle: string | null;
   seoDescription: string | null;
   ogImageUrl: string | null;
+  integrations: EventIntegrations | null;
   publishedAt: string;
   deletedAt: string | null;
 }>) {

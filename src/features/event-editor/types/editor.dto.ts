@@ -1,4 +1,5 @@
 // Event Editor DTOs
+import type { EventIntegrations } from '../../events/types/event.dto';
 
 export interface EventPageDto {
   id: string;
@@ -41,4 +42,11 @@ export interface PublishedPageDto {
   title: string | null;
   sections: SectionBlockDto[];
   themeTokens: Record<string, unknown>;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  ogImageUrl: string | null;
+  coverImageUrl: string | null;
+  integrations: EventIntegrations | null;
+  startsAt: string | null;
+  endsAt: string | null;
 }

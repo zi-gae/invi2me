@@ -4,6 +4,7 @@ import { events } from '@/db/schema/events';
 import { eq, and } from 'drizzle-orm';
 import { PageNotFoundError, EventNotFoundError } from '@/shared/lib/errors';
 import type { PublishedPageDto, SectionBlockDto } from '../types/editor.dto';
+import type { EventIntegrations } from '../../events/types/event.dto';
 
 /**
  * Get published page for public rendering.
@@ -67,6 +68,13 @@ export async function getPublishedPage(eventSlug: string, locale = 'ko'): Promis
     title: page.title,
     sections: sectionDtos,
     themeTokens,
+    seoTitle: event.seoTitle ?? null,
+    seoDescription: event.seoDescription ?? null,
+    ogImageUrl: event.ogImageUrl ?? null,
+    coverImageUrl: event.coverImageUrl ?? null,
+    integrations: (event.integrations as EventIntegrations) ?? null,
+    startsAt: event.startsAt ?? null,
+    endsAt: event.endsAt ?? null,
   };
 }
 
