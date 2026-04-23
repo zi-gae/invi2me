@@ -21,9 +21,10 @@ import { NoticeBannerSection } from './sections/notice-banner-section';
 
 interface SectionRendererProps {
   section: SectionBlockDto;
+  eventSlug: string;
 }
 
-export function SectionRenderer({ section }: SectionRendererProps) {
+export function SectionRenderer({ section, eventSlug }: SectionRendererProps) {
   if (!section.isEnabled) return null;
 
   const p = section.propsJson;
@@ -52,9 +53,9 @@ export function SectionRenderer({ section }: SectionRendererProps) {
     case 'gift_account':
       return <GiftAccountSection props={p} />;
     case 'guestbook':
-      return <GuestbookSection props={p} />;
+      return <GuestbookSection props={p} eventSlug={eventSlug} />;
     case 'rsvp_form':
-      return <RsvpFormSection props={p} />;
+      return <RsvpFormSection props={p} eventSlug={eventSlug} />;
     case 'timeline':
       return <TimelineSection props={p} />;
     case 'dress_code':

@@ -115,6 +115,16 @@ export async function listRsvpResponses(eventId: string): Promise<AdminRsvpRespo
   }));
 }
 
+/** Find guest by event and phone number (for anonymous duplicate check) */
+export async function findGuestByEventAndPhone(eventId: string, phone: string) {
+  const [guest] = await db
+    .select()
+    .from(guests)
+    .where(and(eq(guests.eventId, eventId), eq(guests.phone, phone)))
+    .limit(1);
+  return guest ?? null;
+}
+
 /** Get existing RSVP response for a specific guest */
 export async function getExistingRsvpResponse(eventId: string, guestId: string) {
   const [response] = await db

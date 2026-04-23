@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
 
   const title = page.seoTitle ?? page.title ?? 'invi2me';
   const dateStr = page.startsAt ? formatKakaoDate(page.startsAt) : null;
-  const description = [dateStr, page.seoDescription].filter(Boolean).join('\n') || undefined;
+  const description = dateStr ?? undefined;
   const imageUrl = page.ogImageUrl ?? page.coverImageUrl ?? undefined;
   const url = `https://invi2me.com/${eventSlug}`;
 
@@ -81,7 +81,7 @@ export default async function EventPage({ params }: EventPageProps) {
   return (
     <main className="min-h-screen">
       {page.sections.map((section) => (
-        <SectionRenderer key={section.id} section={section} />
+        <SectionRenderer key={section.id} section={section} eventSlug={eventSlug} />
       ))}
       {kakaoCalendar?.enabled && kakaoCalendar.eventId && (
         <div className="flex justify-center py-6">

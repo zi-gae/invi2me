@@ -26,7 +26,7 @@ export function EditorPreviewPanel() {
         {/* 콘텐츠 */}
         <div className="h-[calc(100%-1.75rem)] overflow-y-auto">
           {enabledSections.map((section) => (
-            <SectionRenderer key={section.id} section={section} />
+            <SectionRenderer key={section.id} section={section} eventSlug="" />
           ))}
         </div>
       </div>
