@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { getPublishedPage } from '@/features/event-editor/queries/page.queries';
 import { SectionRenderer } from '@/features/event-editor/components/section-renderer';
-import { KakaoCalendarButton } from '@/features/events/components/kakao-calendar-button';
 import { DomainError } from '@/shared/lib/errors';
 import type { PublishedPageDto } from '@/features/event-editor/types/editor.dto';
 
@@ -70,25 +69,11 @@ export default async function EventPage({ params }: EventPageProps) {
   const { eventSlug } = await params;
   const page = await fetchPage(eventSlug);
 
-  const kakaoCalendar = page.integrations?.kakaoCalendar;
-
   return (
     <main className="min-h-screen">
       {page.sections.map((section) => (
         <SectionRenderer key={section.id} section={section} eventSlug={eventSlug} />
       ))}
-      {kakaoCalendar?.enabled && kakaoCalendar.eventId && (
-        <div className="flex justify-center py-6">
-          <KakaoCalendarButton
-            eventSlug={page.eventSlug}
-            title={page.seoTitle ?? page.title ?? ''}
-            imageUrl={page.ogImageUrl ?? page.coverImageUrl}
-            startsAt={page.startsAt}
-            endsAt={page.endsAt}
-            integration={kakaoCalendar}
-          />
-        </div>
-      )}
     </main>
   );
 }

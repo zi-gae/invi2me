@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Script from 'next/script';
 
 export default function EventLayout({
   children,
@@ -8,12 +7,6 @@ export default function EventLayout({
 }) {
   return (
     <>
-      <Script
-        src="https://t1.kakaocdn.net/kakao_js_sdk/2.8.1/kakao.min.js"
-        integrity="sha384-OL+ylM/iuPLtW5U3XcvLSGhE8JzReKDank5InqlHGWPhb4140/yrBw0bg0y7+C9J"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
       {children}
       <footer className="border-t py-4">
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
