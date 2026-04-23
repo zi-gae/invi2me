@@ -60,12 +60,6 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
       images: imageUrl ? [{ url: imageUrl }] : undefined,
       type: 'website',
     },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: imageUrl ? [imageUrl] : undefined,
-    },
     alternates: {
       canonical: url,
     },

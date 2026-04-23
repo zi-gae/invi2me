@@ -780,22 +780,22 @@ export function EventSettingsForm({ event }: EventSettingsFormProps) {
         </TabsList>
 
         <div className="mt-6">
-          <TabsContent value="basic">
+          <TabsContent value="basic" keepMounted>
             <BasicInfoTab event={event} />
           </TabsContent>
-          <TabsContent value="schedule">
+          <TabsContent value="schedule" keepMounted>
             <ScheduleTab event={event} />
           </TabsContent>
-          <TabsContent value="visibility">
+          <TabsContent value="visibility" keepMounted>
             <VisibilityTab event={event} />
           </TabsContent>
-          <TabsContent value="seo">
+          <TabsContent value="seo" keepMounted>
             <SeoTab event={event} />
           </TabsContent>
-          <TabsContent value="integrations">
+          <TabsContent value="integrations" keepMounted>
             <IntegrationsTab event={event} />
           </TabsContent>
-          <TabsContent value="features">
+          <TabsContent value="features" keepMounted>
             <FeaturesTab event={event} />
           </TabsContent>
         </div>
