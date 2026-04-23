@@ -23,6 +23,7 @@ import {
   archiveEventAction,
   deleteEventAction,
 } from '../actions/event.actions';
+import { ImageUploadField } from '@/features/event-editor/components/image-upload-field';
 import type { AdminEventDto } from '../types/event.dto';
 
 interface EventSettingsFormProps {
@@ -404,7 +405,7 @@ function VisibilityTab({ event }: { event: AdminEventDto }) {
 
 // ── SEO Tab ──────────────────────────────────────────────────────────────────
 
-function SeoTab({ event }: { event: AdminEventDto }) {
+function SeoTab({ event, eventId }: { event: AdminEventDto; eventId: string }) {
   const [isPending, startTransition] = useTransition();
   const [seoTitle, setSeoTitle] = useState(event.seoTitle ?? '');
   const [seoDescription, setSeoDescription] = useState(event.seoDescription ?? '');
@@ -464,15 +465,14 @@ function SeoTab({ event }: { event: AdminEventDto }) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="ogImageUrl">OG 이미지 URL</Label>
-            <Input
-              id="ogImageUrl"
-              type="url"
+            <ImageUploadField
+              label="OG 이미지"
+              hint="권장 크기: 1200×630"
               value={ogImageUrl}
-              onChange={(e) => setOgImageUrl(e.target.value)}
-              placeholder="https://..."
+              onChange={setOgImageUrl}
+              eventId={eventId}
             />
-            <p className="text-xs text-muted-foreground">SNS 공유 시 미리보기 이미지 URL (권장 크기: 1200×630)</p>
+            <p className="text-xs text-muted-foreground">카카오톡, SNS 공유 시 미리보기 이미지</p>
           </div>
 
           {/* Preview card */}
@@ -790,7 +790,7 @@ export function EventSettingsForm({ event }: EventSettingsFormProps) {
             <VisibilityTab event={event} />
           </TabsContent>
           <TabsContent value="seo" keepMounted>
-            <SeoTab event={event} />
+            <SeoTab event={event} eventId={event.id} />
           </TabsContent>
           <TabsContent value="integrations" keepMounted>
             <IntegrationsTab event={event} />
