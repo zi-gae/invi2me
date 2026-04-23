@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   bigint,
   boolean,
+  index,
   integer,
   jsonb,
   pgTable,
@@ -171,6 +172,32 @@ export const eventGalleryItems = pgTable("event_gallery_items", {
     .defaultNow(),
 });
 
+// ─── Guestbook Messages ──────────────────────────────────────────────────────
+
+export const guestbookMessages = pgTable(
+  "guestbook_messages",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    eventId: uuid("event_id")
+      .notNull()
+      .references(() => events.id),
+    author: text("author").notNull(),
+    relation: text("relation").notNull(),
+    content: text("content").notNull(),
+    passwordHash: text("password_hash").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true, mode: "string" })
+      .notNull()
+      .defaultNow(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true, mode: "string" }),
+  },
+  (table) => [
+    index("guestbook_messages_event_created_idx").on(
+      table.eventId,
+      table.createdAt,
+    ),
+  ],
+);
+
 // ─── Relations ───────────────────────────────────────────────────────────────
 
 export const eventPagesRelations = relations(eventPages, ({ one, many }) => ({
@@ -243,6 +270,16 @@ export const eventGalleryItemsRelations = relations(
     asset: one(eventAssets, {
       fields: [eventGalleryItems.assetId],
       references: [eventAssets.id],
+    }),
+  }),
+);
+
+export const guestbookMessagesRelations = relations(
+  guestbookMessages,
+  ({ one }) => ({
+    event: one(events, {
+      fields: [guestbookMessages.eventId],
+      references: [events.id],
     }),
   }),
 );
