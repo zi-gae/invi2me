@@ -149,19 +149,30 @@ export function GuestbookSection({ props, eventSlug }: GuestbookSectionProps) {
               onChange={(e) => setForm((f) => ({ ...f, author: e.target.value }))}
               className="min-w-0 flex-1 rounded-lg border border-stone-200 px-3 py-2 text-sm outline-none focus:border-stone-400"
             />
-            <select
-              value={form.relation}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, relation: e.target.value as Relation }))
-              }
-              className="rounded-lg border border-stone-200 px-2 py-2 text-sm outline-none focus:border-stone-400"
-            >
-              {RELATION_OPTIONS.map((r) => (
-                <option key={r} value={r}>
-                  {r}
-                </option>
-              ))}
-            </select>
+            <div className="relative shrink-0">
+              <select
+                value={form.relation}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, relation: e.target.value as Relation }))
+                }
+                className="appearance-none rounded-lg border border-stone-200 py-2 pl-3 pr-7 text-sm outline-none focus:border-stone-400"
+              >
+                {RELATION_OPTIONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+              <svg
+                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-stone-400"
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+              >
+                <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
           </div>
 
           <textarea
