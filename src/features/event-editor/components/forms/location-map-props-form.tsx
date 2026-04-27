@@ -34,15 +34,6 @@ export function LocationMapPropsForm({ props, onChange, eventId }: FormProps) {
         <TextField label="경도 (lng)" value={String(num(props, 'lng') ?? '')} onChange={(v) => set({ lng: v ? parseFloat(v) : undefined })} />
       </div>
 
-      <SectionDivider label="교통편" />
-      <ArrayField
-        label="교통편 목록"
-        items={transports}
-        onChange={(items) => set({ transports: items })}
-        emptyItem={EMPTY_TRANSPORT}
-        fields={{ type: { label: '종류', placeholder: 'subway / bus / car / taxi' }, description: { label: '설명', placeholder: '2호선 강남역 1번 출구...' } }}
-        addLabel="교통편 추가"
-      />
     </div>
   );
 }
