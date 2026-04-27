@@ -2,6 +2,7 @@ import { Layout } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { db } from '@/db';
 import { eventPages, eventSections } from '@/db/schema/content';
+import { events } from '@/db/schema/events';
 import { eq } from 'drizzle-orm';
 import { CreatePageButton } from '@/features/event-editor/components/create-page-button';
 import { PublishButton } from '@/features/event-editor/components/publish-button';
@@ -18,6 +19,12 @@ interface EditorPageProps {
 
 export default async function EditorPage({ params }: EditorPageProps) {
   const { eventId } = await params;
+
+  const [event] = await db
+    .select({ slug: events.slug })
+    .from(events)
+    .where(eq(events.id, eventId))
+    .limit(1);
 
   const pages = await db
     .select()
@@ -66,7 +73,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
     visibilityRules: (s.visibilityRules as Record<string, unknown>) ?? {},
   }));
 
-  const previewPanel = <EditorPreviewPanel />;
+  const previewPanel = <EditorPreviewPanel eventSlug={event?.slug ?? ''} />;
 
   const sectionListPanel = (
     <div className="space-y-6">

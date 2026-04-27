@@ -3,7 +3,11 @@
 import { SectionRenderer } from './section-renderer';
 import { useEditorSections } from './editor-sections-context';
 
-export function EditorPreviewPanel() {
+interface EditorPreviewPanelProps {
+  eventSlug: string;
+}
+
+export function EditorPreviewPanel({ eventSlug }: EditorPreviewPanelProps) {
   const { sections } = useEditorSections();
   const enabledSections = sections.filter((s) => s.isEnabled);
 
@@ -26,7 +30,7 @@ export function EditorPreviewPanel() {
         {/* 콘텐츠 */}
         <div className="h-[calc(100%-1.75rem)] overflow-y-auto">
           {enabledSections.map((section) => (
-            <SectionRenderer key={section.id} section={section} eventSlug="" />
+            <SectionRenderer key={section.id} section={section} eventSlug={eventSlug} />
           ))}
         </div>
       </div>
