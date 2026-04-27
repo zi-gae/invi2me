@@ -1,5 +1,4 @@
 import { TextField, SectionDivider, ArrayField, str, arr, num } from '../form-primitives';
-import { ImageUploadField } from '../image-upload-field';
 import { KakaoPlaceSearch } from '../kakao-place-search';
 import type { KakaoPlace } from '../kakao-place-search';
 import { patch, type FormProps } from './form-types';
@@ -35,7 +34,6 @@ export function LocationMapPropsForm({ props, onChange, eventId }: FormProps) {
         <TextField label="경도 (lng)" value={String(num(props, 'lng') ?? '')} onChange={(v) => set({ lng: v ? parseFloat(v) : undefined })} />
       </div>
 
-      <ImageUploadField label="지도 이미지 (선택)" value={str(props, 'mapImageUrl')} onChange={(v) => set({ mapImageUrl: v })} eventId={eventId} />
       <SectionDivider label="교통편" />
       <ArrayField
         label="교통편 목록"
