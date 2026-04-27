@@ -21,20 +21,13 @@ export function GallerySection({ props }: { props: Record<string, unknown> }) {
   const images = (props.images as GalleryImage[]) ?? [];
   const title = (props.title as string) ?? '';
 
-  const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(0);
+  const gridImages = images.slice(0, 9);
+  const [carouselOpen, setCarouselOpen] = useState(false);
+  const [carouselStart, setCarouselStart] = useState(0);
 
-  function go(index: number) {
-    setDirection(index > current ? 1 : -1);
-    setCurrent(index);
-  }
-
-  function prev() {
-    go((current - 1 + images.length) % images.length);
-  }
-
-  function next() {
-    go((current + 1) % images.length);
+  function openCarousel(startIndex: number) {
+    setCarouselStart(startIndex);
+    setCarouselOpen(true);
   }
 
   if (images.length === 0) {
@@ -43,8 +36,8 @@ export function GallerySection({ props }: { props: Record<string, unknown> }) {
         <span className="block text-center text-[11px] tracking-[0.35em] text-stone-600 uppercase">
           GALLERY
         </span>
-        <div className="mt-6 grid grid-cols-2 gap-0.5">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="mt-6 grid grid-cols-3 gap-0.5">
+          {Array.from({ length: 9 }).map((_, i) => (
             <div key={i} className="aspect-square bg-stone-800" />
           ))}
         </div>
@@ -62,10 +55,90 @@ export function GallerySection({ props }: { props: Record<string, unknown> }) {
           <p className="mt-1 text-base font-light text-stone-300">{title}</p>
         </div>
       )}
-      {!title && <div className="pt-16" />}
+      {!title && (
+        <div className="px-6 pt-16 pb-6 text-center">
+          <span className="text-[11px] tracking-[0.35em] text-stone-500 uppercase">
+            GALLERY
+          </span>
+        </div>
+      )}
+
+      {/* 3×3 그리드 (최대 9장) */}
+      <div className="grid grid-cols-3 gap-0.5">
+        {gridImages.map((img, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => openCarousel(i)}
+            className="relative aspect-square overflow-hidden"
+          >
+            <Image
+              src={img.url}
+              alt={img.alt ?? `갤러리 ${i + 1}`}
+              fill
+              className="object-cover"
+              sizes="125px"
+            />
+          </button>
+        ))}
+      </div>
+
+      {/* 전체 이미지 캐러셀 (그리드 클릭 시 열림) */}
+      {carouselOpen && (
+        <GalleryCarousel
+          images={images}
+          startIndex={0}
+          initialSlide={carouselStart}
+          onClose={() => setCarouselOpen(false)}
+        />
+      )}
+    </section>
+  );
+}
+
+// ─── 캐러셀 서브 컴포넌트 ─────────────────────────────────────────────────────
+
+function GalleryCarousel({
+  images,
+  initialSlide = 0,
+  onClose,
+}: {
+  images: GalleryImage[];
+  startIndex: number;
+  initialSlide?: number;
+  onClose?: () => void;
+}) {
+  const [current, setCurrent] = useState(initialSlide);
+  const [direction, setDirection] = useState(0);
+
+  function go(index: number) {
+    setDirection(index > current ? 1 : -1);
+    setCurrent(index);
+  }
+
+  function prev() {
+    go((current - 1 + images.length) % images.length);
+  }
+
+  function next() {
+    go((current + 1) % images.length);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-black/95">
+      {/* 닫기 버튼 */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 rounded-full bg-white/10 p-2 text-white backdrop-blur-sm transition hover:bg-white/20"
+          aria-label="닫기"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      )}
 
       {/* 메인 슬라이더 */}
-      <div className="relative overflow-hidden" style={{ aspectRatio: '3/4' }}>
+      <div className="relative flex-1 overflow-hidden">
         <AnimatePresence initial={false} custom={direction} mode="popLayout">
           <motion.div
             key={current}
@@ -88,9 +161,9 @@ export function GallerySection({ props }: { props: Record<string, unknown> }) {
               src={images[current].url}
               alt={images[current].alt ?? `갤러리 ${current + 1}`}
               fill
-              className="pointer-events-none object-cover"
-              sizes="375px"
-              priority={current === 0}
+              className="pointer-events-none object-contain"
+              sizes="100vw"
+              priority={current === initialSlide}
             />
           </motion.div>
         </AnimatePresence>
@@ -139,6 +212,6 @@ export function GallerySection({ props }: { props: Record<string, unknown> }) {
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
 }
