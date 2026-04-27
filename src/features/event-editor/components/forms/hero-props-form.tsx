@@ -13,7 +13,7 @@ export function HeroPropsForm({ props, onChange, eventId }: FormProps) {
       <TextField label="결혼식 날짜" type="date" value={str(props, 'weddingDate')} onChange={(v) => set({ weddingDate: v })} />
       <TextField label="웨딩홀 이름" value={str(props, 'venueName')} onChange={(v) => set({ venueName: v })} placeholder="그랜드볼룸" />
       <SectionDivider label="배경" />
-      <ImageUploadField label="커버 이미지" value={str(props, 'imageUrl')} onChange={(v) => set({ imageUrl: v })} eventId={eventId} />
+      <ImageUploadField label="커버 이미지" value={str(props, 'imageUrl')} onChange={(v) => set({ imageUrl: v })} eventId={eventId} cropAspect={9 / 16} hint="모바일 비율 9:16" />
     </div>
   );
 }

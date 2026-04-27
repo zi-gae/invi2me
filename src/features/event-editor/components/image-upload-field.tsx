@@ -1,8 +1,9 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { ImagePlus, Loader2, X } from 'lucide-react';
+import { ImagePlus, Loader2, X, Crop } from 'lucide-react';
 import { toast } from 'sonner';
+import { ImageCropDialog } from './image-crop-dialog';
 
 const ACCEPT_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
@@ -12,6 +13,8 @@ interface ImageUploadFieldProps {
   onChange: (url: string) => void;
   eventId: string;
   hint?: string;
+  /** 제공 시 업로드 후 해당 비율로 크롭 다이얼로그를 표시합니다 */
+  cropAspect?: number;
 }
 
 export function ImageUploadField({
@@ -20,13 +23,15 @@ export function ImageUploadField({
   onChange,
   eventId,
   hint,
+  cropAspect,
 }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const upload = useCallback(
-    async (file: File) => {
+    async (file: File | Blob) => {
       setUploading(true);
       try {
         const form = new FormData();
@@ -54,13 +59,40 @@ export function ImageUploadField({
     [eventId, onChange],
   );
 
+  const handleFileSelected = useCallback(
+    (file: File) => {
+      if (cropAspect) {
+        // 크롭 다이얼로그를 위해 로컬 URL 생성
+        const objectUrl = URL.createObjectURL(file);
+        setCropSrc(objectUrl);
+      } else {
+        upload(file);
+      }
+    },
+    [cropAspect, upload],
+  );
+
+  function handleCropComplete(blob: Blob) {
+    setCropSrc(null);
+    upload(blob);
+  }
+
+  function handleCropCancel() {
+    if (cropSrc) URL.revokeObjectURL(cropSrc);
+    setCropSrc(null);
+  }
+
+  function openCropFromExisting() {
+    if (value) setCropSrc(value);
+  }
+
   function openFilePicker() {
     fileInputRef.current?.click();
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (file) upload(file);
+    if (file) handleFileSelected(file);
     e.target.value = '';
   }
 
@@ -69,7 +101,7 @@ export function ImageUploadField({
     setDragOver(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith('image/')) {
-      upload(file);
+      handleFileSelected(file);
     } else {
       toast.error('이미지 파일만 업로드할 수 있습니다.');
     }
@@ -113,6 +145,16 @@ export function ImageUploadField({
             className="h-36 w-full object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+            {cropAspect && (
+              <button
+                type="button"
+                onClick={openCropFromExisting}
+                className="rounded-full bg-white/90 p-2 text-stone-700 shadow-sm transition-colors hover:bg-white"
+                aria-label="이미지 크롭"
+              >
+                <Crop className="size-4" />
+              </button>
+            )}
             <button
               type="button"
               onClick={openFilePicker}
@@ -162,6 +204,16 @@ export function ImageUploadField({
             JPEG, PNG, WebP, GIF · 최대 10MB
           </span>
         </button>
+      )}
+
+      {cropAspect && cropSrc && (
+        <ImageCropDialog
+          open
+          imageSrc={cropSrc}
+          aspect={cropAspect}
+          onComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
       )}
     </div>
   );
