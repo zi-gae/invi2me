@@ -42,18 +42,31 @@ export function KakaoPlaceSearch({ onSelect }: KakaoPlaceSearchProps) {
   const [open, setOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  function search() {
+  function waitForSdk(timeout = 5000): Promise<boolean> {
+    return new Promise((resolve) => {
+      if (window.kakao?.maps?.services) { resolve(true); return; }
+      const start = Date.now();
+      const timer = setInterval(() => {
+        if (window.kakao?.maps?.services) { clearInterval(timer); resolve(true); }
+        else if (Date.now() - start > timeout) { clearInterval(timer); resolve(false); }
+      }, 100);
+    });
+  }
+
+  async function search() {
     const q = query.trim();
     if (!q) return;
-
-    if (!window.kakao?.maps?.services) {
-      setError('카카오 지도 SDK가 아직 로드되지 않았습니다. 잠시 후 다시 시도해주세요.');
-      return;
-    }
 
     setSearching(true);
     setError(null);
     setResults([]);
+
+    const ready = await waitForSdk();
+    if (!ready) {
+      setError('카카오 지도를 불러오지 못했습니다. 페이지를 새로고침해 주세요.');
+      setSearching(false);
+      return;
+    }
 
     const ps = new window.kakao.maps.services.Places();
     ps.keywordSearch(q, (data, status) => {
