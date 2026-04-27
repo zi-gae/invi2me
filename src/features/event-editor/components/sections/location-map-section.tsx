@@ -1,4 +1,4 @@
-import { MapPin } from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
 import { SectionHeader } from './section-shared';
 import { KakaoMap } from '../kakao-map';
 
@@ -54,6 +54,19 @@ export function LocationMapSection({ props }: { props: Record<string, unknown> }
               <p className="mt-2 text-xs text-stone-400">지도 이미지</p>
             </div>
           </div>
+        )}
+
+        {/* 길찾기 버튼 */}
+        {hasCoords && (
+          <a
+            href={`https://map.kakao.com/link/to/${encodeURIComponent(venueName || '목적지')},${lat},${lng}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FEE500] py-3 text-sm font-medium text-[#191919] transition-opacity hover:opacity-90"
+          >
+            <Navigation className="size-4" />
+            카카오맵으로 길찾기
+          </a>
         )}
 
         {/* Transport */}
