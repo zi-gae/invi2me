@@ -140,7 +140,7 @@ export function ImageUploadField({
       </label>
 
       {value ? (
-        <div className={`group relative overflow-hidden border border-stone-200 ${cropShape === 'round' ? 'mx-auto size-24 rounded-full' : 'rounded-lg'}`}>
+        <div className={`group relative overflow-hidden border border-stone-200 ${cropShape === 'round' ? 'mx-auto size-36 rounded-full' : 'rounded-lg'}`}>
           <img
             src={value}
             alt={label}
