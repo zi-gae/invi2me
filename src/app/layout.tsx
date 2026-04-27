@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@/shared/lib/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
+import Script from "next/script";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +33,10 @@ export default function RootLayout({
         <NextTopLoader showSpinner={false} />
         <QueryProvider>{children}</QueryProvider>
         <Toaster />
+        <Script
+          src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_JS_KEY}&libraries=services`}
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

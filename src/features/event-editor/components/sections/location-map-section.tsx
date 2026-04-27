@@ -1,5 +1,6 @@
 import { MapPin } from 'lucide-react';
 import { SectionHeader } from './section-shared';
+import { KakaoMap } from '../kakao-map';
 
 interface TransportItem {
   type: string;
@@ -18,7 +19,11 @@ export function LocationMapSection({ props }: { props: Record<string, unknown> }
   const address = (props.address as string) ?? '';
   const subAddress = (props.subAddress as string) ?? '';
   const mapImageUrl = props.mapImageUrl as string | undefined;
+  const lat = props.lat as number | undefined;
+  const lng = props.lng as number | undefined;
   const transports = (props.transports as TransportItem[]) ?? [];
+
+  const hasCoords = typeof lat === 'number' && typeof lng === 'number';
 
   return (
     <section className="bg-white px-6 py-20 sm:py-24">
@@ -32,7 +37,9 @@ export function LocationMapSection({ props }: { props: Record<string, unknown> }
         </div>
 
         {/* Map */}
-        {mapImageUrl ? (
+        {hasCoords ? (
+          <KakaoMap lat={lat} lng={lng} venueName={venueName} className="h-52 w-full" />
+        ) : mapImageUrl ? (
           <div className="overflow-hidden rounded-xl">
             <img
               src={mapImageUrl}
