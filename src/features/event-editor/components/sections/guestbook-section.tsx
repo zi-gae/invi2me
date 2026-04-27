@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SectionHeader } from './section-shared';
 
 const RELATION_OPTIONS = ['신랑 측', '신부 측', '지인', '기타'] as const;
@@ -55,9 +55,10 @@ export function GuestbookSection({ props, eventSlug }: GuestbookSectionProps) {
   }
 
   // 섹션이 처음 보일 때 자동 로드
-  if (!loaded && !loading) {
+  useEffect(() => {
     loadMessages();
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
