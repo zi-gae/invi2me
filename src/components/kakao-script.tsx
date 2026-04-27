@@ -9,7 +9,7 @@ export function KakaoScript() {
       strategy="afterInteractive"
       onLoad={() => {
         if (window.kakao?.maps) {
-          window.kakao.maps.load(() => {});
+          (window.kakao.maps as unknown as { load: (cb: () => void) => void }).load(() => {});
         }
       }}
     />

@@ -1,3 +1,5 @@
+'use client';
+
 import { MapPin, Navigation } from 'lucide-react';
 import { SectionHeader } from './section-shared';
 import { KakaoMap } from '../kakao-map';
@@ -58,15 +60,7 @@ export function LocationMapSection({ props }: { props: Record<string, unknown> }
 
         {/* 길찾기 버튼 */}
         {hasCoords && (
-          <a
-            href={`https://map.kakao.com/link/to/${encodeURIComponent(venueName || '목적지')},${lat},${lng}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-1.5 border border-stone-300 py-3 text-xs tracking-[0.15em] text-stone-500 transition-colors hover:border-stone-400 hover:text-stone-700"
-          >
-            <Navigation className="size-3.5" />
-            길 찾기
-          </a>
+          <NavigationButton lat={lat} lng={lng} venueName={venueName} />
         )}
 
         {/* Transport */}
@@ -86,5 +80,38 @@ export function LocationMapSection({ props }: { props: Record<string, unknown> }
         )}
       </div>
     </section>
+  );
+}
+
+function NavigationButton({ lat, lng, venueName }: { lat: number; lng: number; venueName: string }) {
+  const dest = `${encodeURIComponent(venueName || '목적지')},${lat},${lng}`;
+
+  function handleClick() {
+    if (!navigator.geolocation) {
+      window.open(`https://map.kakao.com/link/to/${dest}`, '_blank');
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        const from = `${encodeURIComponent('현재위치')},${latitude},${longitude}`;
+        window.open(`https://map.kakao.com/link/from/${from}/to/${dest}`, '_blank');
+      },
+      () => {
+        // 위치 권한 거부 시 출발지 없이 열기
+        window.open(`https://map.kakao.com/link/to/${dest}`, '_blank');
+      },
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="flex w-full items-center justify-center gap-1.5 border border-stone-300 py-3 text-xs tracking-[0.15em] text-stone-500 transition-colors hover:border-stone-400 hover:text-stone-700"
+    >
+      <Navigation className="size-3.5" />
+      길 찾기
+    </button>
   );
 }
