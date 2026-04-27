@@ -25,7 +25,7 @@ export function KakaoMap({ lat, lng, venueName, className = 'h-52 w-full' }: Kak
       attempts++;
       if (attempts > 100) return; // 10초 타임아웃
 
-      if (!window.kakao?.maps) {
+      if (typeof (window.kakao?.maps as unknown as Record<string, unknown>)?.LatLng !== 'function') {
         rafId = requestAnimationFrame(tryInit);
         return;
       }
