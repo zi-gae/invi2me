@@ -8,6 +8,7 @@ import {
   toggleSectionAction,
   deleteSectionAction,
 } from '../actions/editor.actions';
+import { useEditorSections } from './editor-sections-context';
 
 export function SectionActions({
   eventId,
@@ -20,11 +21,15 @@ export function SectionActions({
 }) {
   const [isPending, startTransition] = useTransition();
   const [optimisticEnabled, setOptimisticEnabled] = useState(isEnabled);
+  const { setSections } = useEditorSections();
   const router = useRouter();
 
   function handleToggle() {
     const next = !optimisticEnabled;
     setOptimisticEnabled(next);
+    setSections((prev) =>
+      prev.map((s) => (s.id === sectionId ? { ...s, isEnabled: next } : s))
+    );
     startTransition(async () => {
       await toggleSectionAction(eventId, sectionId, next);
       router.refresh();
@@ -33,6 +38,7 @@ export function SectionActions({
 
   function handleDelete() {
     if (!confirm('이 섹션을 삭제하시겠습니까?')) return;
+    setSections((prev) => prev.filter((s) => s.id !== sectionId));
     startTransition(async () => {
       await deleteSectionAction(eventId, sectionId);
       router.refresh();

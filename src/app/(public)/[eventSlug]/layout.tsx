@@ -6,7 +6,7 @@ export default function EventLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="mx-auto max-w-[430px]">
       {children}
       <footer className="border-t py-4">
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1">
@@ -32,6 +32,6 @@ export default function EventLayout({
           </Link>
         </div>
       </footer>
-    </>
+    </div>
   );
 }
