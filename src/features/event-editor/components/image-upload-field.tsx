@@ -140,11 +140,11 @@ export function ImageUploadField({
       </label>
 
       {value ? (
-        <div className="group relative overflow-hidden rounded-lg border border-stone-200">
+        <div className={`group relative overflow-hidden border border-stone-200 ${cropShape === 'round' ? 'mx-auto size-24 rounded-full' : 'rounded-lg'}`}>
           <img
             src={value}
             alt={label}
-            className="h-36 w-full object-cover"
+            className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
             {cropAspect && (
