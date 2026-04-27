@@ -62,10 +62,10 @@ export function LocationMapSection({ props }: { props: Record<string, unknown> }
             href={`https://map.kakao.com/link/to/${encodeURIComponent(venueName || '목적지')},${lat},${lng}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#FEE500] py-3 text-sm font-medium text-[#191919] transition-opacity hover:opacity-90"
+            className="flex w-full items-center justify-center gap-1.5 border border-stone-300 py-3 text-xs tracking-[0.15em] text-stone-500 transition-colors hover:border-stone-400 hover:text-stone-700"
           >
-            <Navigation className="size-4" />
-            카카오맵으로 길찾기
+            <Navigation className="size-3.5" />
+            길 찾기
           </a>
         )}
 
