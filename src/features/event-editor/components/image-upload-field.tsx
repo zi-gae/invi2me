@@ -15,6 +15,7 @@ interface ImageUploadFieldProps {
   hint?: string;
   /** 제공 시 업로드 후 해당 비율로 크롭 다이얼로그를 표시합니다 */
   cropAspect?: number;
+  cropShape?: 'rect' | 'round';
 }
 
 export function ImageUploadField({
@@ -24,6 +25,7 @@ export function ImageUploadField({
   eventId,
   hint,
   cropAspect,
+  cropShape = 'rect',
 }: ImageUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -211,6 +213,7 @@ export function ImageUploadField({
           open
           imageSrc={cropSrc}
           aspect={cropAspect}
+          cropShape={cropShape}
           onComplete={handleCropComplete}
           onCancel={handleCropCancel}
         />
