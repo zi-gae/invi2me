@@ -6,6 +6,7 @@ export function HeroSection({ props }: { props: Record<string, unknown> }) {
   const weddingDate = props.weddingDate as string | undefined;
   const venueName = (props.venueName as string) ?? '';
   const imageUrl = props.imageUrl as string | undefined;
+  const message = (props.message as string) ?? '';
 
   const hasImage = Boolean(imageUrl);
 
@@ -21,7 +22,7 @@ export function HeroSection({ props }: { props: Record<string, unknown> }) {
 
 
   return (
-    <section className="relative flex min-h-svh flex-col items-center justify-center overflow-hidden">
+    <section className="relative flex min-h-[70svh] flex-col items-center justify-center overflow-hidden">
       {/* Background */}
       {hasImage ? (
         <div
@@ -30,7 +31,7 @@ export function HeroSection({ props }: { props: Record<string, unknown> }) {
           aria-label={`${groomName}과 ${brideName}의 웨딩 사진`}
           style={{ backgroundImage: `url(${imageUrl})` }}
         >
-          <div className="absolute inset-0 bg-linear-to-b from-stone-900/20 via-stone-900/20 to-stone-900/50" />
+          <div className="absolute inset-0 bg-linear-to-b from-black/40 via-black/50 to-black/75" />
         </div>
       ) : (
         <div className="absolute inset-0 bg-stone-100" />
@@ -64,6 +65,17 @@ export function HeroSection({ props }: { props: Record<string, unknown> }) {
             hasImage ? 'bg-white/40' : 'bg-stone-300',
           )}
         />
+
+        {message && (
+          <p
+            className={cn(
+              'mt-5 max-w-xs whitespace-pre-line text-center text-sm font-light leading-relaxed tracking-wide',
+              hasImage ? 'text-white/85' : 'text-stone-600',
+            )}
+          >
+            {message}
+          </p>
+        )}
 
         {formattedDate && (
           <p
