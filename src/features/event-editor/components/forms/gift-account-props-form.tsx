@@ -24,7 +24,11 @@ export function GiftAccountPropsForm({ props, onChange }: FormProps) {
             </button>
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <input className="h-7 rounded-md border border-input bg-transparent px-2.5 py-1 text-xs outline-none focus:border-ring" placeholder="관계 (신랑 / 신부측)" value={account.relation} onChange={(e) => { const a = [...accounts]; a[i] = { ...a[i], relation: e.target.value }; set({ accounts: a }); }} />
+            <select className="h-7 rounded-md border border-input bg-transparent px-2.5 py-1 text-xs outline-none focus:border-ring" value={account.relation} onChange={(e) => { const a = [...accounts]; a[i] = { ...a[i], relation: e.target.value }; set({ accounts: a }); }}>
+              <option value="">신랑측 / 신부측</option>
+              <option value="신랑측">신랑측</option>
+              <option value="신부측">신부측</option>
+            </select>
             <input className="h-7 rounded-md border border-input bg-transparent px-2.5 py-1 text-xs outline-none focus:border-ring" placeholder="이름" value={account.name} onChange={(e) => { const a = [...accounts]; a[i] = { ...a[i], name: e.target.value }; set({ accounts: a }); }} />
             <input className="h-7 rounded-md border border-input bg-transparent px-2.5 py-1 text-xs outline-none focus:border-ring" placeholder="은행명" value={account.bank} onChange={(e) => { const a = [...accounts]; a[i] = { ...a[i], bank: e.target.value }; set({ accounts: a }); }} />
             <input className="h-7 rounded-md border border-input bg-transparent px-2.5 py-1 text-xs outline-none focus:border-ring" placeholder="계좌번호" value={account.accountNumber} onChange={(e) => { const a = [...accounts]; a[i] = { ...a[i], accountNumber: e.target.value }; set({ accounts: a }); }} />
