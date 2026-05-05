@@ -39,7 +39,7 @@ export default function HomePage() {
       <header className="border-b">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
           <span className="text-lg font-semibold tracking-tight">invi2me</span>
-          <Button render={<Link href="/login" />} size="sm">
+          <Button render={<Link href="/login" />} size="sm" nativeButton={false}>
             로그인
           </Button>
         </div>
@@ -62,11 +62,11 @@ export default function HomePage() {
             이벤트 운영 전 과정을 하나의 플랫폼으로 연결합니다.
           </p>
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-            <Button render={<Link href="/login" />} size="lg">
+            <Button render={<Link href="/login" />} size="lg" nativeButton={false}>
               무료로 시작하기
               <ArrowRight className="ml-2 size-4" />
             </Button>
-            <Button render={<Link href="/login" />} variant="outline" size="lg">
+            <Button render={<Link href="/login" />} variant="outline" size="lg" nativeButton={false}>
               로그인
             </Button>
           </div>

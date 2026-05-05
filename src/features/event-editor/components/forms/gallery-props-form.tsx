@@ -47,13 +47,14 @@ export function GalleryPropsForm({ props, onChange, eventId }: FormProps) {
     );
 
     const succeeded = results.flatMap((r) => r.status === 'fulfilled' ? [{ url: r.value, alt: '' }] : []);
-    const failed = results.filter((r) => r.status === 'rejected').length;
+    const failedFiles = files.filter((_, i) => results[i].status === 'rejected');
 
     if (succeeded.length) {
       set({ images: [...images, ...succeeded] });
     }
-    if (failed > 0) {
-      toast.error(`${failed}장 업로드에 실패했습니다.`);
+    if (failedFiles.length > 0) {
+      const names = failedFiles.map((f) => f.name).join(', ');
+      toast.error(`${failedFiles.length}장 업로드에 실패했습니다: ${names}`);
     }
 
     setUploading(false);
