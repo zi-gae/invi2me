@@ -7,7 +7,6 @@ import { submitRsvpSchema } from '../schemas/rsvp.schema';
 import { submitRsvpAction, type RsvpActionResult } from '../actions/rsvp.actions';
 import type { PublicRsvpResponseDto } from '../types/rsvp.dto';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -23,8 +22,9 @@ import {
 
 type RsvpFormValues = {
   attendanceStatus: 'attending' | 'not_attending' | 'maybe';
-  partySize: number;
-  mealCount: number;
+  side: 'groom' | 'bride';
+  companionCount: number;
+  hasMeal: boolean;
   messageToCouple?: string;
   answers?: Record<string, unknown>;
   consents?: Record<string, boolean>;
@@ -75,13 +75,15 @@ export function RsvpForm({ eventSlug, guestToken, guestName, maxCompanionCount }
     resolver: zodResolver(submitRsvpSchema) as never,
     defaultValues: {
       attendanceStatus: undefined,
-      partySize: 1,
-      mealCount: 1,
+      side: undefined,
+      companionCount: 0,
+      hasMeal: false,
       messageToCouple: '',
     },
   });
 
   const attendanceStatus = watch('attendanceStatus');
+  const side = watch('side');
   const isAttending = attendanceStatus === 'attending' || attendanceStatus === 'maybe';
 
   function onSubmit(data: RsvpFormValues) {
@@ -107,7 +109,9 @@ export function RsvpForm({ eventSlug, guestToken, guestName, maxCompanionCount }
 
       {/* Attendance status */}
       <fieldset className="space-y-3">
-        <legend className="text-sm font-medium text-muted-foreground">참석 여부를 선택해주세요</legend>
+        <legend className="text-sm font-medium text-muted-foreground">
+          참석 여부를 선택해주세요 <span className="text-destructive">*</span>
+        </legend>
         <div className="grid grid-cols-3 gap-3">
           {ATTENDANCE_OPTIONS.map((option) => {
             const isSelected = attendanceStatus === option.value;
@@ -118,11 +122,8 @@ export function RsvpForm({ eventSlug, guestToken, guestName, maxCompanionCount }
                 onClick={() => {
                   setValue('attendanceStatus', option.value as RsvpFormValues['attendanceStatus'], { shouldValidate: true });
                   if (option.value === 'not_attending') {
-                    setValue('partySize', 0);
-                    setValue('mealCount', 0);
-                  } else if (watch('partySize') === 0) {
-                    setValue('partySize', 1);
-                    setValue('mealCount', 1);
+                    setValue('companionCount', 0);
+                    setValue('hasMeal', false);
                   }
                 }}
                 className={`flex flex-col items-center gap-2.5 rounded-2xl border-2 px-3 py-5 transition-all duration-200 ${
@@ -145,42 +146,75 @@ export function RsvpForm({ eventSlug, guestToken, guestName, maxCompanionCount }
         )}
       </fieldset>
 
-      {/* Party size & meal count (only when attending/maybe) */}
+      {/* Side selection */}
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium text-muted-foreground">
+          신랑/신부 측을 선택해주세요 <span className="text-destructive">*</span>
+        </legend>
+        <div className="grid grid-cols-2 gap-3">
+          {([
+            { value: 'groom', label: '신랑 측' },
+            { value: 'bride', label: '신부 측' },
+          ] as const).map((option) => {
+            const isSelected = side === option.value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => setValue('side', option.value, { shouldValidate: true })}
+                className={`rounded-2xl border-2 py-3 text-sm font-semibold transition-all duration-200 ${
+                  isSelected
+                    ? 'border-rose-400 bg-rose-50 text-rose-600 dark:bg-rose-950 dark:text-rose-300'
+                    : 'border-border bg-background hover:border-muted-foreground/30 hover:bg-muted/40'
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+        </div>
+        {errors.side && (
+          <p className="text-sm text-destructive">{errors.side.message ?? '신랑/신부 측을 선택해주세요.'}</p>
+        )}
+      </fieldset>
+
+      {/* Companion count & meal (only when attending/maybe) */}
       {isAttending && (
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="partySize" className="flex items-center gap-1.5 text-sm">
+            <Label htmlFor="companionCount" className="flex items-center gap-1.5 text-sm">
               <Users weight="duotone" className="size-4 text-rose-400" />
-              참석 인원
+              추가 인원
             </Label>
-            <Input
-              id="partySize"
-              type="number"
-              min={1}
-              max={maxCompanionCount + 1}
-              {...register('partySize', { valueAsNumber: true })}
-              aria-invalid={!!errors.partySize}
-            />
-            {errors.partySize && (
-              <p className="text-xs text-destructive">{errors.partySize.message}</p>
+            <select
+              id="companionCount"
+              {...register('companionCount', { valueAsNumber: true })}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+              aria-invalid={!!errors.companionCount}
+            >
+              <option value={0}>없음</option>
+              {Array.from({ length: Math.min(maxCompanionCount, 10) }, (_, i) => i + 1).map((n) => (
+                <option key={n} value={n}>{n}명</option>
+              ))}
+            </select>
+            {errors.companionCount && (
+              <p className="text-xs text-destructive">{errors.companionCount.message}</p>
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="mealCount" className="flex items-center gap-1.5 text-sm">
+            <Label htmlFor="hasMeal" className="flex items-center gap-1.5 text-sm">
               <ForkKnife weight="duotone" className="size-4 text-rose-400" />
-              식사 인원
+              식사 여부
             </Label>
-            <Input
-              id="mealCount"
-              type="number"
-              min={0}
-              max={maxCompanionCount + 1}
-              {...register('mealCount', { valueAsNumber: true })}
-              aria-invalid={!!errors.mealCount}
-            />
-            {errors.mealCount && (
-              <p className="text-xs text-destructive">{errors.mealCount.message}</p>
-            )}
+            <select
+              id="hasMeal"
+              onChange={(e) => setValue('hasMeal', e.target.value === 'true', { shouldValidate: true })}
+              defaultValue="false"
+              className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              <option value="true">식사 예정</option>
+              <option value="false">식사 안 함</option>
+            </select>
           </div>
         </div>
       )}
@@ -215,7 +249,7 @@ export function RsvpForm({ eventSlug, guestToken, guestName, maxCompanionCount }
         type="submit"
         size="lg"
         className="w-full gap-2 rounded-xl"
-        disabled={isPending || !attendanceStatus}
+        disabled={isPending || !attendanceStatus || !side}
       >
         <PaperPlaneTilt weight="fill" className="size-4" />
         {isPending ? '제출 중...' : '응답 제출하기'}

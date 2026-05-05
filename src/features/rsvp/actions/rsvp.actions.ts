@@ -46,17 +46,20 @@ export async function submitRsvpAction(
       return { success: false, error: 'RSVP 양식을 찾을 수 없습니다.', code: 'RSVP_FORM_NOT_FOUND' };
     }
 
+    const partySize = validated.companionCount + 1;
+    const mealCount = validated.hasMeal ? partySize : 0;
+
     // Submit response
     const response = await submitRsvpResponse({
       eventId: event.id,
       rsvpFormId: form.id,
       guestId: guest.id,
       attendanceStatus: validated.attendanceStatus,
-      partySize: validated.partySize,
-      mealCount: validated.mealCount,
+      partySize,
+      mealCount,
       sourceType: 'personal_link',
       messageToCouple: validated.messageToCouple,
-      answersJson: validated.answers,
+      answersJson: { ...validated.answers, side: validated.side },
       consentsJson: validated.consents,
     });
 
@@ -130,6 +133,7 @@ export async function submitAnonymousRsvpAction(
       partySize: 1,
       mealCount: 0,
       sourceType: 'public_link',
+      answersJson: { side: validated.side },
     });
 
     return {

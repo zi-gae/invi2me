@@ -61,17 +61,20 @@ export async function POST(
       );
     }
 
+    const partySize = data.companionCount + 1;
+    const mealCount = data.hasMeal ? partySize : 0;
+
     // Submit response
     const response = await submitRsvpResponse({
       eventId: event.id,
       rsvpFormId: form.id,
       guestId: guest.id,
       attendanceStatus: data.attendanceStatus,
-      partySize: data.partySize,
-      mealCount: data.mealCount,
+      partySize,
+      mealCount,
       sourceType: guestToken ? 'personal_link' : 'public_link',
       messageToCouple: data.messageToCouple,
-      answersJson: data.answers,
+      answersJson: { ...data.answers, side: data.side },
       consentsJson: data.consents,
     });
 
