@@ -20,6 +20,7 @@ interface GuestbookSectionProps {
 }
 
 export function GuestbookSection({ props, eventSlug }: GuestbookSectionProps) {
+  const title = (props.title as string) || '방명록';
   const description =
     (props.description as string) ?? '따뜻한 축하 메시지를 남겨주세요.';
 
@@ -117,7 +118,7 @@ export function GuestbookSection({ props, eventSlug }: GuestbookSectionProps) {
 
   return (
     <section className="bg-white px-6 py-20 sm:py-24">
-      <SectionHeader label="GUESTBOOK" title="방명록" />
+      <SectionHeader label="GUESTBOOK" title={title} />
 
       {description && (
         <p className="mx-auto mb-10 max-w-xs text-center text-sm text-stone-400">
