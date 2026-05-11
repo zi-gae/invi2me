@@ -4,7 +4,7 @@ import { db } from '@/db';
 import { events } from '@/db/schema/events';
 import { eq, and } from 'drizzle-orm';
 import { submitRsvpSchema, submitAnonymousRsvpSchema } from '../schemas/rsvp.schema';
-import { submitRsvpResponse, getDefaultRsvpForm, findGuestByEventAndPhone } from '../queries/rsvp.queries';
+import { submitRsvpResponse, getDefaultRsvpForm } from '../queries/rsvp.queries';
 import { getGuestByToken, createGuest } from '@/features/guests/queries/guest.queries';
 import { DomainError, EventNotFoundError, RsvpClosedError, RsvpAlreadySubmittedError } from '@/shared/lib/errors';
 import type { SubmitRsvpInput, SubmitAnonymousRsvpInput } from '../schemas/rsvp.schema';
@@ -104,12 +104,6 @@ export async function submitAnonymousRsvpAction(
       throw new RsvpClosedError(event.id);
     }
 
-    // Duplicate check by phone
-    const existingGuest = await findGuestByEventAndPhone(event.id, validated.phone);
-    if (existingGuest) {
-      throw new RsvpAlreadySubmittedError(existingGuest.id);
-    }
-
     // Get default RSVP form
     const form = await getDefaultRsvpForm(event.id);
     if (!form) {
@@ -120,9 +114,11 @@ export async function submitAnonymousRsvpAction(
     const guest = await createGuest({
       eventId: event.id,
       fullName: validated.name,
-      phone: validated.phone,
       guestType: 'primary',
     });
+
+    const partySize = validated.companionCount + 1;
+    const mealCount = validated.hasMeal ? partySize : 0;
 
     // Submit response
     const response = await submitRsvpResponse({
@@ -130,8 +126,8 @@ export async function submitAnonymousRsvpAction(
       rsvpFormId: form.id,
       guestId: guest.id,
       attendanceStatus: validated.attendanceStatus,
-      partySize: 1,
-      mealCount: 0,
+      partySize,
+      mealCount,
       sourceType: 'public_link',
       answersJson: { side: validated.side },
     });

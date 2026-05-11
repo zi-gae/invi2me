@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircle, XCircle, Question } from '@phosphor-icons/react';
+import { CheckCircle, XCircle } from '@phosphor-icons/react';
 import {
   Dialog,
   DialogContent,
@@ -24,9 +24,8 @@ interface RsvpFormSectionProps {
 }
 
 const BUTTONS: { status: AttendanceStatus; label: string; icon: React.ElementType; color: string }[] = [
-  { status: 'attending',     label: '참석합니다', icon: CheckCircle, color: 'border-rose-300 text-rose-500 [&_svg]:text-rose-400' },
+  { status: 'attending',     label: '참석합니다', icon: CheckCircle, color: 'border-green-300 text-green-600 [&_svg]:text-green-400' },
   { status: 'not_attending', label: '불참합니다', icon: XCircle,     color: 'border-stone-200 text-stone-400 [&_svg]:text-stone-400' },
-  { status: 'maybe',         label: '미정입니다', icon: Question,    color: 'border-amber-200 text-amber-500 [&_svg]:text-amber-400' },
 ];
 
 export function RsvpFormSection({ props, eventSlug }: RsvpFormSectionProps) {
@@ -52,7 +51,7 @@ export function RsvpFormSection({ props, eventSlug }: RsvpFormSectionProps) {
 
   const form = useForm<SubmitAnonymousRsvpInput>({
     resolver: zodResolver(submitAnonymousRsvpSchema),
-    defaultValues: { name: '', phone: '', attendanceStatus: 'attending', side: undefined },
+    defaultValues: { name: '', companionCount: 0, hasMeal: false, attendanceStatus: 'attending', side: undefined },
   });
 
   function handleButtonClick(status: AttendanceStatus) {
@@ -138,7 +137,7 @@ export function RsvpFormSection({ props, eventSlug }: RsvpFormSectionProps) {
                 onClick={() => setSelectedSide(value)}
                 className={`flex flex-1 items-center justify-center rounded-2xl border-2 py-3 text-sm font-semibold transition-all duration-200 ${
                   selectedSide === value
-                    ? 'border-rose-300 bg-rose-50 text-rose-600'
+                    ? 'border-green-300 bg-green-50 text-green-600'
                     : 'border-stone-200 bg-white text-stone-500 hover:border-stone-300'
                 }`}
               >
@@ -180,6 +179,8 @@ export function RsvpFormSection({ props, eventSlug }: RsvpFormSectionProps) {
           </DialogHeader>
           <form onSubmit={form.handleSubmit(handleAnonymousSubmit)} className="mt-2 flex flex-col gap-4">
             <input type="hidden" {...form.register('side')} />
+
+            {/* 이름 */}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="rsvp-name" className="text-sm font-medium text-stone-700">이름</label>
               <input
@@ -194,20 +195,56 @@ export function RsvpFormSection({ props, eventSlug }: RsvpFormSectionProps) {
                 <p className="text-xs text-red-500">{form.formState.errors.name.message}</p>
               )}
             </div>
+
+            {/* 식사 여부 */}
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="rsvp-phone" className="text-sm font-medium text-stone-700">전화번호</label>
-              <input
-                id="rsvp-phone"
-                type="tel"
-                placeholder="010-0000-0000"
-                autoComplete="tel"
-                {...form.register('phone')}
-                className="rounded-lg border border-stone-200 px-3 py-2 text-sm outline-none focus:border-stone-400"
-              />
-              {form.formState.errors.phone && (
-                <p className="text-xs text-red-500">{form.formState.errors.phone.message}</p>
-              )}
+              <span className="text-sm font-medium text-stone-700">식사 여부</span>
+              <div className="flex gap-2">
+                {([{ value: true, label: '식사합니다' }, { value: false, label: '식사 안 합니다' }] as const).map(({ value, label }) => {
+                  const watched = form.watch('hasMeal');
+                  return (
+                    <button
+                      key={String(value)}
+                      type="button"
+                      onClick={() => form.setValue('hasMeal', value)}
+                      className={`flex flex-1 items-center justify-center rounded-lg border py-2 text-xs font-semibold transition-all ${
+                        watched === value
+                          ? 'border-green-300 bg-green-50 text-green-600'
+                          : 'border-stone-200 bg-white text-stone-500'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
+            {/* 추가 인원 */}
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-medium text-stone-700">추가 인원</span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => form.setValue('companionCount', Math.max(0, (form.getValues('companionCount') ?? 0) - 1))}
+                  className="flex size-8 items-center justify-center rounded-lg border border-stone-200 text-stone-500 hover:border-stone-300"
+                >
+                  −
+                </button>
+                <span className="w-6 text-center text-sm font-semibold text-stone-700">
+                  {form.watch('companionCount') ?? 0}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => form.setValue('companionCount', Math.min(10, (form.getValues('companionCount') ?? 0) + 1))}
+                  className="flex size-8 items-center justify-center rounded-lg border border-stone-200 text-stone-500 hover:border-stone-300"
+                >
+                  +
+                </button>
+                <span className="text-xs text-stone-400">명 (본인 제외)</span>
+              </div>
+            </div>
+
             {form.formState.errors.root && (
               <p className="text-xs text-red-500">{form.formState.errors.root.message}</p>
             )}

@@ -121,7 +121,7 @@ export function GuestbookSection({ props, eventSlug }: GuestbookSectionProps) {
       <SectionHeader label="GUESTBOOK" title={title} />
 
       {description && (
-        <p className="mx-auto mb-10 max-w-xs text-center text-sm text-stone-400">
+        <p className="mx-auto mb-10 max-w-xs whitespace-pre-line text-center text-sm text-stone-400">
           {description}
         </p>
       )}

@@ -65,7 +65,7 @@ export function GiftAccountSection({ props }: { props: Record<string, unknown> }
     <section className="bg-stone-50 px-6 py-20 sm:py-24">
       <SectionHeader label="GIFT" title="마음 전하기" />
       {description && (
-        <p className="mx-auto mb-10 max-w-xs text-center text-sm leading-relaxed text-stone-500">
+        <p className="mx-auto mb-10 max-w-xs whitespace-pre-line text-center text-sm leading-relaxed text-stone-500">
           {description}
         </p>
       )}
