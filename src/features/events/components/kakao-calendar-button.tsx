@@ -12,17 +12,6 @@ interface KakaoCalendarButtonProps {
   integration: KakaoCalendarIntegration;
 }
 
-declare global {
-  interface Window {
-    Kakao: {
-      isInitialized: () => boolean;
-      init: (key: string) => void;
-      Share: {
-        createDefaultButton: (options: Record<string, unknown>) => void;
-      };
-    };
-  }
-}
 
 export function KakaoCalendarButton({
   eventSlug,

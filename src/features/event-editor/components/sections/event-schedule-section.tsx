@@ -1,5 +1,6 @@
 import { MapPin, Calendar, Clock } from 'lucide-react';
 import { SectionHeader } from './section-shared';
+import { KakaoCalendarButton } from './kakao-calendar-button';
 
 export function EventScheduleSection({ props }: { props: Record<string, unknown> }) {
   const date = props.date as string | undefined;
@@ -7,6 +8,7 @@ export function EventScheduleSection({ props }: { props: Record<string, unknown>
   const venueName = (props.venueName as string) ?? '';
   const venueAddress = (props.venueAddress as string) ?? '';
   const hallName = (props.hallName as string) ?? '';
+  const calendarTitle = (props.calendarTitle as string) || '결혼식';
 
   const formattedDate = date
     ? new Intl.DateTimeFormat('ko-KR', {
@@ -52,6 +54,17 @@ export function EventScheduleSection({ props }: { props: Record<string, unknown>
                 <p className="mt-1 text-xs text-stone-400">{venueAddress}</p>
               )}
             </address>
+          </div>
+        )}
+        {date && time && (
+          <div className="pt-2">
+            <KakaoCalendarButton
+              title={calendarTitle}
+              date={date}
+              time={time}
+              locationName={[venueName, hallName].filter(Boolean).join(' ')}
+              locationAddress={venueAddress}
+            />
           </div>
         )}
       </div>

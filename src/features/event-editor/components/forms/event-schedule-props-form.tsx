@@ -13,6 +13,13 @@ export function EventSchedulePropsForm({ props, onChange }: FormProps) {
       <TextField label="웨딩홀 이름" value={str(props, 'venueName')} onChange={(v) => set({ venueName: v })} placeholder="그랜드볼룸" />
       <TextField label="홀 이름" value={str(props, 'hallName')} onChange={(v) => set({ hallName: v })} placeholder="다이아몬드홀 2층" />
       <TextField label="주소" value={str(props, 'venueAddress')} onChange={(v) => set({ venueAddress: v })} placeholder="서울특별시 강남구..." />
+      <SectionDivider label="캘린더 등록" />
+      <TextField
+        label="캘린더 이벤트 제목"
+        value={str(props, 'calendarTitle')}
+        onChange={(v) => set({ calendarTitle: v })}
+        placeholder="결혼식"
+      />
     </div>
   );
 }
