@@ -15,7 +15,7 @@ export const submitAnonymousRsvpSchema = z.object({
   attendanceStatus: z.enum(['attending', 'not_attending', 'maybe']),
   side: z.enum(['groom', 'bride'], { error: '신랑측/신부측을 선택해주세요.' }),
   name: z.string().min(1, '이름을 입력해주세요.').max(50),
-  companionCount: z.number().int().min(0).max(10).default(0),
-  hasMeal: z.boolean().default(false),
+  companionCount: z.number().int().min(0).max(10),
+  hasMeal: z.boolean(),
 });
 export type SubmitAnonymousRsvpInput = z.infer<typeof submitAnonymousRsvpSchema>;
