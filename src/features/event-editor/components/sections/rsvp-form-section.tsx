@@ -213,55 +213,59 @@ export function RsvpFormSection({ props, eventSlug }: RsvpFormSectionProps) {
                   )}
                 </div>
 
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-sm font-medium text-stone-700">식사 여부</span>
-                  <div className="flex gap-2">
-                    {([{ value: true, label: '식사합니다' }, { value: false, label: '식사 안 합니다' }] as const).map(({ value, label }) => {
-                      const watched = form.watch('hasMeal');
-                      const activeColor = value
-                        ? 'border-green-300 bg-green-50 text-green-600'
-                        : 'border-rose-300 bg-rose-50 text-rose-500';
-                      return (
-                        <button
-                          key={String(value)}
-                          type="button"
-                          onClick={() => form.setValue('hasMeal', value)}
-                          className={`flex flex-1 items-center justify-center rounded-lg border py-2 text-xs font-semibold transition-all ${
-                            watched === value ? activeColor : 'border-stone-200 bg-white text-stone-500'
-                          }`}
-                        >
-                          {label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <span className="text-sm font-medium text-stone-700">추가 인원</span>
-                  <div className="flex w-full items-center justify-between rounded-lg border border-stone-200 px-3 py-2">
-                    <span className="text-xs text-stone-400">본인 제외</span>
-                    <div className="flex items-center gap-4">
-                      <button
-                        type="button"
-                        onClick={() => form.setValue('companionCount', Math.max(0, (form.getValues('companionCount') ?? 0) - 1))}
-                        className="flex size-7 items-center justify-center rounded-md border border-stone-200 text-stone-500 hover:border-stone-300"
-                      >
-                        −
-                      </button>
-                      <span className="w-4 text-center text-sm font-semibold text-stone-700">
-                        {form.watch('companionCount') ?? 0}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => form.setValue('companionCount', Math.min(10, (form.getValues('companionCount') ?? 0) + 1))}
-                        className="flex size-7 items-center justify-center rounded-md border border-stone-200 text-stone-500 hover:border-stone-300"
-                      >
-                        +
-                      </button>
+                {selectedStatus !== 'not_attending' && (
+                  <>
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-sm font-medium text-stone-700">식사 여부</span>
+                      <div className="flex gap-2">
+                        {([{ value: true, label: '식사합니다' }, { value: false, label: '식사 안 합니다' }] as const).map(({ value, label }) => {
+                          const watched = form.watch('hasMeal');
+                          const activeColor = value
+                            ? 'border-green-300 bg-green-50 text-green-600'
+                            : 'border-rose-300 bg-rose-50 text-rose-500';
+                          return (
+                            <button
+                              key={String(value)}
+                              type="button"
+                              onClick={() => form.setValue('hasMeal', value)}
+                              className={`flex flex-1 items-center justify-center rounded-lg border py-2 text-xs font-semibold transition-all ${
+                                watched === value ? activeColor : 'border-stone-200 bg-white text-stone-500'
+                              }`}
+                            >
+                              {label}
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <span className="text-sm font-medium text-stone-700">추가 인원</span>
+                      <div className="flex w-full items-center justify-between rounded-lg border border-stone-200 px-3 py-2">
+                        <span className="text-xs text-stone-400">본인 제외</span>
+                        <div className="flex items-center gap-4">
+                          <button
+                            type="button"
+                            onClick={() => form.setValue('companionCount', Math.max(0, (form.getValues('companionCount') ?? 0) - 1))}
+                            className="flex size-7 items-center justify-center rounded-md border border-stone-200 text-stone-500 hover:border-stone-300"
+                          >
+                            −
+                          </button>
+                          <span className="w-4 text-center text-sm font-semibold text-stone-700">
+                            {form.watch('companionCount') ?? 0}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => form.setValue('companionCount', Math.min(10, (form.getValues('companionCount') ?? 0) + 1))}
+                            className="flex size-7 items-center justify-center rounded-md border border-stone-200 text-stone-500 hover:border-stone-300"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
               </>
             )}
 
